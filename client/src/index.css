@@ -1,0 +1,32 @@
+@import 'react-toastify/dist/ReactToastify.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* index.css */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #211C1E;
+  }
+  
+  *::-webkit-scrollbar{
+    width: 5px;
+
+}
+*::-webkit-scrollbar-track{
+    background:transparent;
+}
+*::-webkit-scrollbar-thumb{
+    background-color: rgba(59, 59, 60, 0.619);
+    border-radius: 20px;
+    border: transparent;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance: textfield;
+}
