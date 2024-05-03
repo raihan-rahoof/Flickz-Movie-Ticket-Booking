@@ -23,12 +23,13 @@ function Navbar() {
     }, [jwt_token, user,isLoggedIn]);
 
     const handleLogout = async () => {
-        const res = await axiosInstance.post('/auth/logout/', { 'refresh_token': refresh_token });
+        const res = await axiosInstance.post('/auth/logout/', { 'refresh_token': refresh_token , 'access_token':jwt_token });
         if (res.status === 200) {
             localStorage.removeItem('access');
             localStorage.removeItem('refresh');
             localStorage.removeItem('user');
             setIsLoggedIn(false);
+            navigate('/login')
             toast.success('Logout success');
         }
     }

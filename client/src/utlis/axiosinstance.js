@@ -2,6 +2,7 @@ import axios from "axios";
 import dayjs from "dayjs"
 import {jwtDecode} from "jwt-decode";
 
+
 const token = localStorage.getItem('access') ? JSON.parse(localStorage.getItem('access')):""
 const refresh_token = localStorage.getItem('refresh') ? JSON.parse(localStorage.getItem('refresh')):""
 const baseUrl = "http://localhost:8000/api/v1"
@@ -20,13 +21,13 @@ axiosInstance.interceptors.request.use(async req => {
         if(!isExpired){
             return req
         }else{
-            const res = await axios.post(`${baseUrl}/auth/token/refresh/`,{token:refresh_token})
+            const res = await axios.post(`${baseUrl}/auth/token/refresh/`,{'refresh':refresh_token})
             if (res.status == 200){
                 localStorage.setItem('access',JSON.stringify(res.data.access))
                 req.headers.Authorization = `Bearer ${res.data.access}`
                 return req
             }else{
-                const res = await axios.post(`${baseUrl}/auth/logout/`, { 'refresh_token': refresh_token });
+                const res = await axios.post(`${baseUrl}/auth/logout/`, { 'refresh': refresh_token });
                 console.log(res.data);
                 if (res.status === 200) {
                     localStorage.removeItem('access');

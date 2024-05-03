@@ -8,17 +8,18 @@ function UserList() {
 
     const [user , setUser] = useState([])
     
+    const fetchUsers = async () => {
+      try {
+          const res = await axiosInstance.get('/cadmin/admin/user-list');
+          setUser(res.data);
+          console.log(res.data)
+      } catch (error) {
+          console.log('error', error);
+      }
+  };
 
     useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const res = await axiosInstance.get('/cadmin/admin/user-list');
-                setUser(res.data);
-                console.log(res.data)
-            } catch (error) {
-                console.log('error', error);
-            }
-        };
+       
         fetchUsers();
     }, []);
 

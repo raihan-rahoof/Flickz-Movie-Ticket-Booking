@@ -32,7 +32,7 @@ class AdminLoginSerializer(serializers.ModelSerializer):
             return {
                 'email': user.email,
                 'name': user.get_full_name,
-                'access_token': access,
+                'access_token': str(access),
                 'refresh_token': str(refresh)
             }
         else:

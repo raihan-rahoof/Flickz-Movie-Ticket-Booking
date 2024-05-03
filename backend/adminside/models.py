@@ -6,7 +6,9 @@ class Movie(models.Model):
     poster = models.ImageField(upload_to='posters/',null=True,blank=True)
     trailer_link = models.URLField(null=True,blank=True)
     cast = models.CharField(max_length=255,null=True,blank=True)
-    category = models.CharField(max_length=100,null=True,blank=True)
+    genre = models.CharField(max_length=100,null=True,blank=True)
+    language = models.CharField(max_length=40,null=True,blank=True)
+    
     certificate = models.CharField(max_length=100,null=True,blank=True)
     release_date = models.DateField(null=True,blank=True)
     description = models.TextField(null=True,blank=True)
