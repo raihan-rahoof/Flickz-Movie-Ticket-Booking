@@ -51,3 +51,16 @@ class MovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
         fields = '__all__'
+
+    def create(self , validated_data):
+        title = validated_data.get('title')
+        language = validated_data.get('language')
+        genre = validated_data.get('genre')
+
+        existing_movie = Movie.objects.filter(title=title, language=language, genre=genre)
+
+
+        if existing_movie:
+            raise serializers.ValidationError("Movie with this title and language already exists")
+        
+        return super().create(validated_data)

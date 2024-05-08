@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import './nav.scss';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
-import axiosInstance from '../../utlis/axiosinstance';
+import createAxiosInstance from '../../utlis/axiosinstance';
 import { toast } from 'react-toastify';
 import AuthContext from '../../Context/AuthContext';
 
@@ -12,6 +12,9 @@ function Navbar() {
     const refresh_token = JSON.parse(localStorage.getItem('refresh'));
     const navigate = useNavigate()
     const {isLoggedIn,setIsLoggedIn} = useContext(AuthContext)
+
+    const axiosInstance = createAxiosInstance('user')
+
     console.log(isLoggedIn)
     useEffect(() => {
         if (jwt_token && user) {

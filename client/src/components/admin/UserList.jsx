@@ -1,11 +1,11 @@
 import React , {useState,useEffect} from 'react'
-import axiosInstance from '../../utlis/axiosinstance'
+import createAxiosInstance from '../../utlis/axiosinstance'
 import axios from 'axios'
 
 
 function UserList() {
 
-
+    const axiosInstance = createAxiosInstance('admin')
     const [user , setUser] = useState([])
     
     const fetchUsers = async () => {

@@ -1,7 +1,38 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import createAxiosInstance from '../../utlis/axiosinstance';
 
 function AdminNav() {
+  
+    // const admin = JSON.parse(localStorage.getItem('admin'));
+    // const jwt_token = JSON.parse(localStorage.getItem('admin_access'));
+    // const refresh_token = JSON.parse(localStorage.getItem('admin_refresh'));
+    // const navigate = useNavigate()
+    
+
+    // const axiosInstance = createAxiosInstance('user')
+
+    
+    // useEffect(() => {
+    //     if (jwt_token && admin) {
+            
+    //         setIsLoggedIn(true)
+    //     } else {
+    //         setIsLoggedIn(false);
+    //     }
+    // }, [jwt_token, user,isLoggedIn]);
+
+    // const handleLogout = async () => {
+    //     const res = await axiosInstance.post('/auth/logout/', { 'refresh_token': refresh_token , 'access_token':jwt_token });
+    //     if (res.status === 200) {
+    //         localStorage.removeItem('access');
+    //         localStorage.removeItem('refresh');
+    //         localStorage.removeItem('user');
+    //         setIsLoggedIn(false);
+    //         navigate('/login')
+    //         toast.success('Logout success');
+    //     }
+    // }
 
   
 

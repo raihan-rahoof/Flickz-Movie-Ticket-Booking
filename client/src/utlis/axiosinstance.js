@@ -3,14 +3,28 @@ import dayjs from "dayjs"
 import {jwtDecode} from "jwt-decode";
 
 
-const token = localStorage.getItem('access') ? JSON.parse(localStorage.getItem('access')):""
-const refresh_token = localStorage.getItem('refresh') ? JSON.parse(localStorage.getItem('refresh')):""
-const baseUrl = "http://localhost:8000/api/v1"
-const axiosInstance = axios.create({
-    baseURL:baseUrl,
-    'Content-type':'application/json',
-    headers:{'Authorization': localStorage.getItem('access') ? `Bearer ${token}`:null}
-})
+const createAxiosInstance = (role) =>{
+
+    let token = "";
+    let refresh_token = "";
+
+    if (role == "user"){
+         token = localStorage.getItem('access') ? JSON.parse(localStorage.getItem('access')):""
+         refresh_token = localStorage.getItem('refresh') ? JSON.parse(localStorage.getItem('refresh')):""
+    }else if(role == "admin"){
+         token = localStorage.getItem('admin_access') ? JSON.parse(localStorage.getItem('admin_access')):""
+         refresh_token = localStorage.getItem('admin_refresh') ? JSON.parse(localStorage.getItem('admin_refresh')):""
+    }else if (role == "theatre"){
+         token = localStorage.getItem('theatre_access') ? JSON.parse(localStorage.getItem('theatre_access')):""
+         refresh_token = localStorage.getItem('theatre_refresh') ? JSON.parse(localStorage.getItem('theatre_refresh')):""
+    }
+
+    const baseUrl = "http://localhost:8000/api/v1"
+    const axiosInstance = axios.create({
+        baseURL:baseUrl,
+        'Content-type':'application/json',
+        headers:{'Authorization': token ? `Bearer ${token}`:null}
+    })
 
 
 axiosInstance.interceptors.request.use(async req => {
@@ -42,6 +56,7 @@ axiosInstance.interceptors.request.use(async req => {
     }
     return req
 })
+    return axiosInstance
+}
 
-
-export default axiosInstance
+export default createAxiosInstance

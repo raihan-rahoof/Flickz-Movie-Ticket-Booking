@@ -9,7 +9,8 @@ urlpatterns = [
     path('api/v1/auth/',include('user_auth.urls')),
     path('api/v1/auth/',include('social_accounts.urls')),
     path('api/v1/cadmin/',include('adminside.urls')),
-    path('api/v1/theatre/',include('theatre_side.urls'))
+    path('api/v1/theatre/',include('theatre_side.urls')),
+    path('api/v1/home/',include('users.urls'))
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

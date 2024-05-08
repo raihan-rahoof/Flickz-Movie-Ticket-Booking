@@ -1,6 +1,6 @@
 import React,{useState} from 'react'
 import { useNavigate } from 'react-router-dom'
-import axiosInstance from '../../../utlis/axiosinstance'
+import createAxiosInstance from '../../../utlis/axiosinstance'
 import { toast } from 'react-hot-toast'
 import axios from 'axios'
 
@@ -8,7 +8,7 @@ import axios from 'axios'
 function AdminLogin() {
 
     const navigate = useNavigate()
-
+    const axiosInstance = createAxiosInstance('admin')
     const [loginData , setLogin] = useState({
         'email':'',
         'password':''
@@ -39,8 +39,8 @@ function AdminLogin() {
           
           if(res.status == 200){
           localStorage.setItem("admin", JSON.stringify(admin));
-          localStorage.setItem("access", JSON.stringify(response.access_token));
-          localStorage.setItem("refresh", JSON.stringify(response.refresh_token));
+          localStorage.setItem("admin_access", JSON.stringify(response.access_token));
+          localStorage.setItem("admin_refresh", JSON.stringify(response.refresh_token));
           navigate('/admin/user-list')
           toast.success('Login successful');
           }

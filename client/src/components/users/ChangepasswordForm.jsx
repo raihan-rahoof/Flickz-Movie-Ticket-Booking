@@ -2,13 +2,14 @@ import '../../pages/users/auth/register.scss'
 import React, {useState} from 'react'
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
-import axiosInstance from '../../utlis/axiosinstance';
+import createAxiosInstance from '../../utlis/axiosinstance';
 
 
 function ChangepasswordForm() {
 
     const navigate=useNavigate()
     const {uid, token}=useParams()
+    const axiosInstance = createAxiosInstance('user')
     const [newpasswords, setNewPassword]=useState({
       password:"",
       confirm_password:"",

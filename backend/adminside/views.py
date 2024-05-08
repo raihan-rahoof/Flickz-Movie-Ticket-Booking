@@ -48,3 +48,20 @@ class MovieListCreateAPIView(generics.ListCreateAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
     permission_classes = [IsAdminUser]
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data = request.data)
+        serializer.is_valid(raise_exception = True)
+
+        title = serializer.validated_data.get('title')
+        language = serializer.validated_data.get('language')
+        genre = serializer.validated_data.get('genre')
+
+        existing_movie = Movie.objects.filter(title=title , language = language , genre=genre)
+
+        if existing_movie:
+             return Response({'error':'Movie with same Name,Language,Genre already exists'})
+        
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

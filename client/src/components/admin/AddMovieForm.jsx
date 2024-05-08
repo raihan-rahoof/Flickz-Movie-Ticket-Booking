@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import axiosInstance from '../../utlis/axiosinstance';
-import {toast} from 'react-toastify';
+import createAxiosInstance from '../../utlis/axiosinstance';
+import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2'
 
 function AddMovieForm() {
     const [formData, setFormData] = useState({
@@ -10,13 +11,16 @@ function AddMovieForm() {
         poster: null,
         trailer_link: '',
         cast: '',
-        category: '',
+        genre: '',
+        language:'',
         certificate: '',
         release_date: '',
         description: ''
     });
 
     const navigate = useNavigate()
+    const axiosInstance = createAxiosInstance('admin')
+
 
     const [previewImage, setPreviewImage] = useState('');
 
@@ -36,6 +40,9 @@ function AddMovieForm() {
         }
     };
 
+
+    
+
     console.log(formData);
 
     const handleSubmit = async (e) => {
@@ -45,13 +52,27 @@ function AddMovieForm() {
         formDataToSend.append('poster', formData.poster);
         formDataToSend.append('trailer_link', formData.trailer_link);
         formDataToSend.append('cast', formData.cast);
-        formDataToSend.append('category', formData.category);
+        formDataToSend.append('genre', formData.genre);
         formDataToSend.append('certificate', formData.certificate);
+        formDataToSend.append('language', formData.language);
         formDataToSend.append('release_date', formData.release_date);
         formDataToSend.append('description', formData.description);
 
+        const currentDate = new Date();
+
+        if (new Date(formData.release_date) < currentDate) {
+            Swal.fire({
+                title: "Past Date",
+                text: "The date you selected is a Past (old)",
+                icon: "warning"
+            });
+        }else{
+
+        
+
         try {
-            const token = JSON.parse(localStorage.getItem('access'));
+            const token = JSON.parse(localStorage.getItem('admin_access'));
+            
             console.log(token);
             const res = await axios.post('http://localhost:8000/api/v1/cadmin/admin/add-movies/', formDataToSend, {
                 headers: {
@@ -59,14 +80,26 @@ function AddMovieForm() {
                     Authorization: `Bearer ${token}` 
                 }
             });
-            if (res.status == 200){
+            
+            if (res.status == 201){
                 toast.success('Movie added successfully')
                 navigate('/admin/movies')
+            }else if (res.status == 200){
+                Swal.fire({
+                    title: "Already Exists",
+                    text: res.data.error,
+                    icon: "warning"
+                  });
             }
         } catch (error) {
-            
+            console.log(error);
+           
         }
+    }
     };
+
+
+
 
     return (
         <div className="max-w-lg mx-auto mt-8 bg-gray-800 p-8 rounded-md">
@@ -86,6 +119,10 @@ function AddMovieForm() {
                     </div>
                 )}
                 <div className="mb-4">
+                    <label htmlFor="language" className="block text-white">Language</label>
+                    <input type="text" id="language" name="language" value={formData.language} onChange={handleChange} className="w-full bg-gray-700 text-white rounded-md px-3 py-2" />
+                </div>
+                <div className="mb-4">
                     <label htmlFor="trailer_link" className="block text-white">Trailer Link</label>
                     <input type="url" id="trailer_link" name="trailer_link" value={formData.trailer_link} onChange={handleChange} className="w-full bg-gray-700 text-white rounded-md px-3 py-2" />
                 </div>
@@ -94,8 +131,8 @@ function AddMovieForm() {
                     <input type="text" id="cast" name="cast" value={formData.cast} onChange={handleChange} className="w-full bg-gray-700 text-white rounded-md px-3 py-2" />
                 </div>
                 <div className="mb-4">
-                    <label htmlFor="category" className="block text-white">Category</label>
-                    <input type="text" id="category" name="category" value={formData.category} onChange={handleChange} className="w-full bg-gray-700 text-white rounded-md px-3 py-2" />
+                    <label htmlFor="genre" className="block text-white">Genre</label>
+                    <input type="text" id="genre" name="genre" value={formData.genre} onChange={handleChange} className="w-full bg-gray-700 text-white rounded-md px-3 py-2" />
                 </div>
                 <div className="mb-4">
                     <label htmlFor="certificate" className="block text-white">Certificate</label>
@@ -114,6 +151,9 @@ function AddMovieForm() {
                 </div>
             </form>
         </div>
+
+
+
     );
 }
 

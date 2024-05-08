@@ -2,11 +2,11 @@ import axios from 'axios'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {toast} from 'react-toastify'
-import axiosInstance from '../../utlis/axiosinstance'
+import createAxiosInstance from '../../utlis/axiosinstance'
 
 function ResetPassword() {
     const [email,setEmail] = useState('')
-
+    const axiosInstance = createAxiosInstance('user')
     const handleSubmit = async(e)=>{
         e.preventDefault()
         if(email){
