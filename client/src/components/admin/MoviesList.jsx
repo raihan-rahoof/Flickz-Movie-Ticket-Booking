@@ -53,8 +53,8 @@ function MoviesList() {
                       <td className="border border-gray-200 px-4 py-2 text-white">{movie.language}</td>
                       <td className="border border-gray-200 px-4 py-2 text-white">{movie.release_date}</td>
                       <td className="border border-gray-200 px-4 py-2 text-white">
-                          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2" onClick={() => handleEditMovie(movie.id)}><box-icon name='edit' color='#ffffff' ></box-icon></button>
-                          <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={() => handleDeleteMovie(movie.id)}><box-icon name='trash' color='#ffffff' ></box-icon></button>
+                          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2" ><box-icon name='edit' color='#ffffff' ></box-icon></button>
+                          <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" ><box-icon name='trash' color='#ffffff' ></box-icon></button>
                       </td>
                   </tr>
                     ))}

@@ -1,7 +1,7 @@
 import axios from 'axios'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import {toast} from 'react-toastify'
+import toast from 'react-hot-toast'
 
 function OtpForm() {
     const [otp, setOtp]=useState("")
@@ -15,7 +15,7 @@ function OtpForm() {
                 const resp = res.data
                 if (res.status === 200) {
                     navigate('/login')
-                    toast.success(resp.message)
+                    toast.success("Verification success , Now Login")
                 }
             }else{
                 toast.error("Please enter your otp");
@@ -24,7 +24,7 @@ function OtpForm() {
             if (error.response) {
                 console.log(error.response)
                 if (error.response.status === 400) {
-                    toast.error("invalid OTP");
+                    toast.error(error.response.data.message);
                 } 
             } else if (error.request) {
                 

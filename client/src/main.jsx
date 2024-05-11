@@ -17,6 +17,7 @@ import AddMovie from './pages/admin/movies/AddMovie'
 import { AuthProvider } from './Context/AuthContext';
 import MoveDetails from './pages/users/MoveDetails'
 import TheatreRegister from './pages/theatre/TheatreRegister'
+import TheatreLogin from './pages/theatre/TheatreLogin'
 
 
 const router = createBrowserRouter(
@@ -38,6 +39,7 @@ const router = createBrowserRouter(
     <Route path='/admin/add-movie' element={<AddMovie/>}/>
 
     <Route path='/theatre/register' element={<TheatreRegister/>}/>
+    <Route path='/theatre/login' element={<TheatreLogin/>}/>
      
   </Route>
     
