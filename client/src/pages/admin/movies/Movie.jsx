@@ -5,7 +5,7 @@ import MoviesList from '../../../components/admin/MoviesList'
 function Movie() {
   return (
     <>
-    <AdminNav/>
+    <AdminNav now={'movies'}/>
     <MoviesList/>
     </>
   )

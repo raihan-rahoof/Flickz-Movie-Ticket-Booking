@@ -2,6 +2,7 @@ import React ,{useState}from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './theatreauth.scss'
 
 function TheatreRegister() {
 
@@ -20,6 +21,8 @@ function TheatreRegister() {
     pincode: '',
     google_maps_link: '',
  });
+
+ const [isLoading,setLoading] = useState(false)
 
  const handleChange = (e) => {
   setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -52,14 +55,17 @@ console.log(formData);
   }
   
   try {
+    setLoading(true)
     const response = await axios.post('http://127.0.0.1:8000/api/v1/theatre/register/', formData);
 
     if (response.status == 201){
-      navigate('/theatre/login')
-      toast.success("Theatre Registeraton Successfull")
+      setLoading(false)
+      navigate('/theatre/verify-email')
+      toast.success("A verification code has sent to your mail please enter it Here")
     }
 
   } catch (error) {
+    setLoading(false)
     console.log(error);
     if (error.response) {
      
@@ -76,10 +82,11 @@ console.log(formData);
 
 
   return (
-   
+   <>
 
-    <div class="lg:m-10 dark md:flex justify-center items-center h-screen">
-  <form onSubmit={handleSubmit} class="relative border border-gray-700 space-y-3 max-w-screen-md mx-auto rounded-md bg-gray-800 p-6 shadow-xl lg:p-10">
+    <div class="flex-col dark md:flex justify-center items-center h-auto">
+      
+  <form onSubmit={handleSubmit} class="relative top-[3rem] border border-gray-700 space-y-3 max-w-screen-md mx-auto rounded-md bg-gray-800 p-6 shadow-xl lg:p-10">
     <h1 class="mb-6 text-xl font-semibold lg:text-2xl text-white">Register your Theatre</h1>
 
     <div class="grid gap-3 md:grid-cols-2">
@@ -172,12 +179,18 @@ console.log(formData);
     
 
     <div>
-      <button type="submit" class="mt-5 w-full rounded-md bg-blue-600 p-2 text-center font-semibold text-white">Get Started</button>
+      {isLoading ? <button type="submit" class="mt-5 w-full rounded-md bg-indigo-500 p-2 text-center font-semibold text-white">
+        <div class="animate-spin inline-block size-7 border-[3px] border-current border-t-transparent text-white rounded-full " role="status" aria-label="loading">
+          <span class="sr-only">Loading...</span>
+        </div>
+        </button> :
+      <button type="submit" class="mt-5 w-full rounded-md bg-indigo-500 p-2 text-center font-semibold text-white">Register</button>}
     </div>
   </form>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#6366f1" fill-opacity="1" d="M0,32L120,74.7C240,117,480,203,720,208C960,213,1200,139,1320,101.3L1440,64L1440,320L1320,320C1200,320,960,320,720,320C480,320,240,320,120,320L0,320Z"></path></svg>
 </div>
 
-    
+</>
   );
 }
 

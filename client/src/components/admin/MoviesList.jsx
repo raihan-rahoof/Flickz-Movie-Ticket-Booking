@@ -3,13 +3,17 @@ import axios from 'axios';
 import { Link } from 'react-router-dom'; // Assuming you're using React Router for navigation
 import createAxiosInstance from '../../utlis/axiosinstance';
 import toast from 'react-hot-toast';
-
+import MovieUpdateModal from './MovieUpdateModal';
 
 
 
 function MoviesList() {
     const [movies, setMovies] = useState([]);
     const axiosInstance = createAxiosInstance('admin')
+    const [selectedMovie, setMovie] = useState()
+    const [isModelopen,setModelopen] = useState(false)
+    console.log(isModelopen);
+    console.log(selectedMovie);
     useEffect(() => {
         fetchMovies();
     }, []);
@@ -24,7 +28,18 @@ function MoviesList() {
         }
     };
 
+    const handleEditClick = (movie) =>{
+        setMovie(movie)
+        setModelopen(true)
+    }
+
+    const handleCloseModal = ()=>{
+        setMovie(null)
+        setModelopen(false)
+    }
+
     return (
+        <>
         <div className='h-auto bg-[#1b1c31]'>
         <div className="container mx-auto px-4 py-8">
             <h2 className="text-3xl font-semibold mb-4 text-white">Movie List</h2>
@@ -53,7 +68,7 @@ function MoviesList() {
                       <td className="border border-gray-200 px-4 py-2 text-white">{movie.language}</td>
                       <td className="border border-gray-200 px-4 py-2 text-white">{movie.release_date}</td>
                       <td className="border border-gray-200 px-4 py-2 text-white">
-                          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2" ><box-icon name='edit' color='#ffffff' ></box-icon></button>
+                          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2" onClick={()=>handleEditClick(movie)} ><box-icon name='edit' color='#ffffff' ></box-icon></button>
                           <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" ><box-icon name='trash' color='#ffffff' ></box-icon></button>
                       </td>
                   </tr>
@@ -65,6 +80,10 @@ function MoviesList() {
 
         </div>
         </div>
+
+       
+
+        </>
     );
 }
 

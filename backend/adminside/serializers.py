@@ -3,7 +3,9 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from user_auth.models import User
 from .models import Movie
+from theatre_side.models import Theatre
 
+#-------------Authenticating of admin----------------------------------
 class AdminLoginSerializer(serializers.ModelSerializer):
     email = serializers.EmailField()
     password = serializers.CharField()
@@ -47,6 +49,7 @@ class UserListSerializer(serializers.ModelSerializer):
 
 
 
+#------------------Movie side serialisers--------------------------
 class MovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
@@ -64,3 +67,12 @@ class MovieSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Movie with this title and language already exists")
         
         return super().create(validated_data)
+
+
+#-----------------------Theatre side serialisers----------------------------------
+    
+class ThatreListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Theatre
+        exclude = ['groups', 'user_permissions', 'password','is_superuser','last_login']

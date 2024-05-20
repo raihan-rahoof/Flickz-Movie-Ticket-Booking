@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import AdminLoginSerializer , UserListSerializer,MovieSerializer
+from .serializers import AdminLoginSerializer , UserListSerializer,MovieSerializer,ThatreListSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
@@ -8,9 +8,10 @@ from user_auth.models import User
 from rest_framework.permissions import IsAdminUser
 from rest_framework.views import APIView
 from .models import Movie
+from theatre_side.models import Theatre
 # Create your views here.
 
-#user side [authentication , block and unblock , also Listing users]
+#-------------user side [authentication , block and unblock , also Listing users]---------
 
 class AdminTokenObtainPairView(TokenObtainPairView):
     serializer_class = AdminLoginSerializer
@@ -41,7 +42,7 @@ class BlockUnblockUser(APIView):
         return Response(serializer.data,status=status.HTTP_200_OK)
           
 
-#movies section [movie adding , updating , deleting]
+#--------------------movies section [movie adding , updating , deleting]------------------------
 
      
 class MovieListCreateAPIView(generics.ListCreateAPIView):
@@ -67,7 +68,43 @@ class MovieListCreateAPIView(generics.ListCreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
 
-class MovieupdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
+class MovieupdateView(generics.RetrieveUpdateAPIView):
      queryset=Movie.objects.all()
      serializer_class = MovieSerializer
+     lookup_field = 'pk'
      permission_classes = [IsAdminUser]
+
+
+
+#----------------Theatre Side views--------------
+     
+class TheatreListView(generics.ListAPIView):
+     queryset=Theatre.objects.all()
+     serializer_class = ThatreListSerializer
+     permission_classes = [IsAdminUser]
+
+class TheatreRequestsView(generics.ListAPIView):
+     queryset = Theatre.objects.filter(admin_allow=False)
+     serializer_class = ThatreListSerializer
+     permission_classes = [IsAdminUser]
+
+class TheatreDetailView(generics.RetrieveAPIView):
+     queryset=Theatre.objects.all()
+     serializer_class = ThatreListSerializer
+     lookup_field = 'pk'
+     permission_classes = [IsAdminUser]
+
+
+class TheatreAllowOrDisallow(generics.RetrieveUpdateAPIView):
+     queryset = Theatre.objects.all()
+     serializer_class = ThatreListSerializer
+     permission_classes = [IsAdminUser]
+
+     def update(self, request, *args, **kwargs):
+          theatre = self.get_object()
+          theatre.admin_allow = not theatre.admin_allow
+          theatre.save()
+
+          serializer = self.get_serializer(theatre)
+          return Response(serializer.data,status=status.HTTP_200_OK)
+     

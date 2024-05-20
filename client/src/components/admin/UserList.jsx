@@ -8,6 +8,7 @@ function UserList() {
     const axiosInstance = createAxiosInstance('admin')
     const [user , setUser] = useState([])
     
+    
     const fetchUsers = async () => {
       try {
           const res = await axiosInstance.get('/cadmin/admin/user-list');
@@ -26,7 +27,7 @@ function UserList() {
     const HandleBlockUser = async (e, userId, index) => {
         e.preventDefault();
         try {
-            console.log(userId);
+            
             const res = await axiosInstance.put(`/cadmin/admin/user-block-unblock/${userId}/`);
             console.log(res);
             const updatedUser = { ...user[index], is_active: !user[index].is_active };

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Theatre
-from django.contrib.auth import authenticate
+from rest_framework.exceptions import AuthenticationFailed
+from rest_framework_simplejwt.tokens import RefreshToken
 class TheatreRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Theatre
@@ -18,3 +19,35 @@ class TheatreRegistrationSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+class TheatreLoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
+    access_token = serializers.CharField(read_only=True)
+    refresh_token = serializers.CharField(read_only=True)
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
+
+        try:
+            theatre = Theatre.objects.get(email=email)
+        except Theatre.DoesNotExist:
+            raise AuthenticationFailed('Invalid login credentials')
+        
+        if not theatre.check_password(password):
+            raise AuthenticationFailed('Invalid login credentials')
+            
+        if not theatre.admin_allow:
+            raise AuthenticationFailed('Please allow up to 24 hours for your request to be reviewed by our administration team. Upon approval, you will receive a notification via email.')
+        
+        if not theatre.is_active:
+            raise AuthenticationFailed('Your Account has been blocked.Connect us for more details')
+        
+        tokens = theatre.tokens()
+
+        return{
+            'email':theatre.email,
+            'theatre_name':theatre.theatre_name,
+            'access_token': str(tokens.get('access')),
+            'refresh_token':str(tokens.get('refresh'))
+        }

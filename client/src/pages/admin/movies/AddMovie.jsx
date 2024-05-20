@@ -5,7 +5,7 @@ import AddMovieForm from '../../../components/admin/AddMovieForm'
 function AddMovie() {
   return (
    <>
-   <AdminNav/>
+   <AdminNav now={'movies'}/>
    <AddMovieForm/>
    </>
   )
