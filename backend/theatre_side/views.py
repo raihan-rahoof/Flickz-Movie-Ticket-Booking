@@ -1,12 +1,12 @@
 from rest_framework import generics
-from .serializers import TheatreRegistrationSerializer,TheatreLoginSerializer
+from .serializers import TheatreRegistrationSerializer,TheatreLoginSerializer,TheatreLogoutSerializer
 from .models import Theatre,OneTimePasswordTheatre
 
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken,TokenError
 from rest_framework import status
 from rest_framework.response import Response
 from theatre_side.utils import send_generated_otp_to_email
-
+from rest_framework.permissions import IsAuthenticated
 class TheatreRegisterView(generics.GenericAPIView):
     serializer_class=TheatreRegistrationSerializer
 
@@ -48,3 +48,19 @@ class TheatreLoginView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data,context={'request':request})
         serializer.is_valid(raise_exception=True)
         return Response(serializer.validated_data,status=status.HTTP_200_OK)
+    
+class TheatreLogoutView(generics.GenericAPIView):
+    serializer_class = TheatreLogoutSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self,request,*args,**kwargs):
+        serialzer = self.get_serializer(data=request.data)
+        serialzer.is_valid(raise_exception=True)
+
+        try:
+            refresh_token = RefreshToken(serialzer.validated_data['refresh_token'])
+            refresh_token.blacklist()
+        except TokenError:
+            return Response({'message':'Invalid or Expired Token'},status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response({"message": "Successfully logged out."}, status=status.HTTP_200_OK)

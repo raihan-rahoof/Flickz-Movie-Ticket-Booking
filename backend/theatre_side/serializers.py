@@ -51,3 +51,11 @@ class TheatreLoginSerializer(serializers.Serializer):
             'access_token': str(tokens.get('access')),
             'refresh_token':str(tokens.get('refresh'))
         }
+
+
+class TheatreLogoutSerializer(serializers.Serializer):
+    refresh_token = serializers.CharField()
+
+    def validate(self, attrs):
+        self.refresh_token = attrs.get('refresh_token')
+        return attrs
