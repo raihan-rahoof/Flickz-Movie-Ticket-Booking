@@ -12,8 +12,9 @@ export default {
   theme: {
     extend: {},
   },
+  
   plugins: [
-   nextui({defaultTheme:"dark"})
+   nextui({defaultTheme: "dark"})
   ],
 }
 

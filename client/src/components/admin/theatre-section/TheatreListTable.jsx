@@ -11,11 +11,31 @@ function TheatreListTable() {
   const [requests, setRequests] = useState([]);
   const axiosInstance = createAxiosInstance('admin')
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
+  const [viewAll,setViewAll] = useState(false)
   
+  console.log(viewAll)
+
   const fetchTheatreRequests = async ()=>{
     try{
       const res = await axiosInstance.get('/cadmin/admin/theatres-request-list')
       setRequests(res.data)
+    }catch(error){
+      console.log(error);
+    }
+  }
+
+  const buttonChange = ()=>{
+    if(viewAll){
+      setViewAll(false)
+    }else{
+      setViewAll(true)
+    }
+  }
+
+  const fetchTheatres = async ()=>{
+    try{
+      const res = await axiosInstance.get('/cadmin/admin/theatres-list')
+      setTheatres(res.data)
     }catch(error){
       console.log(error);
     }
@@ -56,24 +76,85 @@ function TheatreListTable() {
       <div className="fixed w-full h-screen bg-[#1B1C31]">
         <div className="mx-auto mt-12 max-w-screen-lg px-2">
           <div className="sm:flex sm:items-center sm:justify-between flex-col sm:flex-row">
-            <h2 className="flex-1 text-base font-semibold  text-gray-100">Theatre Requests</h2>
+            <h2 className="flex-1 text-base font-semibold  text-gray-100">{viewAll ? 'Theatre List' : 'Theatre Requests'}</h2>
 
             <div className="mt-4 sm:mt-0">
               <div className="flex items-center justify-start sm:justify-end">
-                <div className="flex items-center">
+                {/* <div className="flex items-center">
                   <label htmlFor="" className="mr-2 flex-shrink-0 text-sm font-medium text-gray-100">Sort by:</label>
                   <select name="" className="sm:mr-4 block w-full whitespace-pre rounded-lg border p-1 pr-10 text-base outline-none focus:shadow sm:text-sm bg-gray-800 border-gray-700 text-gray-100">
                     <option className="whitespace-no-wrap text-sm">Recent</option>
                   </select>
-                </div>
+                </div> */}
 
-                <button type="button" className="inline-flex cursor-pointer items-center rounded-lg border border-gray-400 bg-gray-800 py-2 px-3 text-center text-sm font-medium text-gray-300 shadow hover:bg-gray-700 focus:shadow">
+                <button onClick={()=> {fetchTheatres(); buttonChange(); }} type="button" className="inline-flex cursor-pointer items-center rounded-lg border border-gray-400 bg-gray-800 py-2 px-3 text-center text-sm font-medium text-gray-300 shadow hover:bg-gray-700 focus:shadow">
                   
-                 View all
+                 {viewAll ? 'View Requests' : 'View all'}
                 </button>
               </div>
             </div>
           </div>
+
+          { viewAll ? (
+
+          <div className="mt-6 overflow-hidden rounded-xl border shadow bg-gray-800">
+            
+            <table className="bg-[#2d2e3e] min-w-full border-separate border-spacing-y-2 border-spacing-x-2">
+              <thead className="hidden border-b lg:table-header-group">
+
+                
+                <tr className="">
+                  <td width="50%" className="whitespace-normal py-4 text-sm font-medium text-gray-400 sm:px-6">Name</td>
+
+                  <td className="whitespace-normal py-4 text-sm font-medium text-gray-400 sm:px-6">Owner</td>
+
+                  <td className="whitespace-normal py-4 text-sm font-medium text-gray-400 sm:px-6">State</td>
+
+                  <td className="whitespace-normal py-4 text-sm font-medium text-gray-400 sm:px-6">Details</td>
+
+                  
+                </tr>
+               
+              </thead>
+
+              <tbody className="lg:border-gray-700">
+
+               
+              
+
+
+                { theatres.map((theatre,index)=>(
+                <tr className="" key={theatre.id}>
+                  <td width="50%" className="whitespace-no-wrap py-4 text-sm font-bold text-gray-100 sm:px-6">
+                    {theatre.theatre_name}
+                    <div className="mt-1 lg:hidden">
+                      <p className="font-normal text-gray-500">{theatre.owner_name}</p>
+                    </div>
+                  </td>
+
+                  <td className="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-300 sm:px-6 lg:table-cell">{theatre.owner_name}</td>
+
+                  <td className="whitespace-no-wrap py-4 px-6 text-right text-sm text-gray-300 lg:text-left">
+                    {theatre.state}
+                    <Button onPress={onOpen} className="flex mt-1 ml-auto w-fit items-center rounded-full bg-blue-600 py-2 px-3 text-left text-xs font-medium text-white lg:hidden"><i className="fa-solid fa-eye" ></i></Button>
+                  </td>
+
+                  <td className="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-6 lg:table-cell">
+                    <Button onPress={onOpen} onClick={()=> setTheatre(theatre)} className="inline-flex items-center rounded-full bg-blue-600 py-2 px-3 text-xs text-white hover:bg-blue-800"><i className="fa-solid fa-eye" ></i></Button>
+                  </td>
+                  {/* <td className="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-6 lg:table-cell">
+                    <button className="inline-flex items-center rounded-full bg-red-600 py-2 px-3 text-xs text-white"><i className="fa-solid fa-x"></i></button>
+                    
+                  </td> */}
+                </tr>
+                ))}
+              
+                
+                {/* Add more rows here */}
+              </tbody>
+            </table>
+            
+          </div>) :
 
           <div className="mt-6 overflow-hidden rounded-xl border shadow bg-gray-800">
             
@@ -133,9 +214,9 @@ function TheatreListTable() {
             </table>
             
           </div>
-        </div>
+        }
 
-
+</div>
 
         <Modal scrollBehavior={'inside'} isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>

@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast';
 import { BeatLoader } from 'react-spinners';
-import '../../pages/users/auth/login.scss'
 import Swal from 'sweetalert2';
 import AuthContext from '../../Context/AuthContext';
 
@@ -72,7 +71,7 @@ function LoginForm() {
 
    google.accounts.id.renderButton(
     document.getElementById("signInDiv"),
-    {theme:"filled", size:"medium", text:"continue_with", shape:"circle", width:"200", borderRadius: "20px"}
+    {theme:"filled",  text:"continue_with", shape:"circle", width:"200", borderRadius: "20px"}
   );
 
   if(isLoggedIn){
@@ -217,7 +216,7 @@ function LoginForm() {
           
           <div className="googleContainer" >
               <div className="gsignIn" id='signInDiv'>
-
+                
               </div>
           </div>
 

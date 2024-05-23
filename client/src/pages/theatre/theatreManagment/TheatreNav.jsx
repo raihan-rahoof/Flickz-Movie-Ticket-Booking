@@ -1,22 +1,28 @@
 import React from "react";
 import {Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Link, Button} from "@nextui-org/react";
+import { useNavigate } from "react-router-dom";
+import createAxiosInstance from "../../../utlis/axiosinstance";
 
 
 export default function TheatreNav(props) {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
-  const menuItems = [
-    "Profile",
-    "Dashboard",
-    "Activity",
-    "Analytics",
-    "System",
-    "Deployments",
-    "My Settings",
-    "Team Settings",
-    "Help & Feedback",
-    "Log Out",
-  ];
+  const theatre = JSON.parse(localStorage.getItem('theatre'))
+  const access = JSON.parse(localStorage.getItem('theatre_access'))
+  const refresh = JSON.parse(localStorage.getItem('theatre_refresh'))
+  const navigate = useNavigate()
+
+  const axiosInstance = createAxiosInstance('theatre')
+
+  const handleLogout = async ()=>{
+    const res = await axiosInstance.post('theatre/theatre-logout/',{'refresh_token':refresh , 'access_token':access})
+    if(res.status === 200){
+      localStorage.removeItem('theatre_access');
+      localStorage.removeItem('theatre_refresh');
+      localStorage.removeItem('theatre');
+      navigate('/theatre/login')
+    }
+  }
 
   return (
     <Navbar onMenuOpenChange={setIsMenuOpen}>
@@ -51,7 +57,7 @@ export default function TheatreNav(props) {
       <NavbarContent justify="end">
         
         <NavbarItem>
-          <Button as={Link} className="bg-indigo-500" href="#" variant="flat">
+          <Button as={Link} onClick={handleLogout} className="bg-indigo-500" href="#" variant="flat">
             Log out
           </Button>
         </NavbarItem>

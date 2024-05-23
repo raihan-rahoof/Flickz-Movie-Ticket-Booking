@@ -73,3 +73,5 @@ class OneTimePasswordTheatre(models.Model):
 
     def __str__(self) -> str:
         return f"{self.theatre.theatre_name}-passcode"
+    
+    

@@ -7,6 +7,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from theatre_side.utils import send_generated_otp_to_email
 from rest_framework.permissions import IsAuthenticated
+from .authentication import TheatreJWTAuthentication
+
 class TheatreRegisterView(generics.GenericAPIView):
     serializer_class=TheatreRegistrationSerializer
 
@@ -52,6 +54,7 @@ class TheatreLoginView(generics.GenericAPIView):
 class TheatreLogoutView(generics.GenericAPIView):
     serializer_class = TheatreLogoutSerializer
     permission_classes = [IsAuthenticated]
+    authentication_classes =[TheatreJWTAuthentication]
 
     def post(self,request,*args,**kwargs):
         serialzer = self.get_serializer(data=request.data)

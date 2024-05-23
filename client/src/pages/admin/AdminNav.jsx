@@ -21,7 +21,7 @@ function AdminNav(props) {
             localStorage.removeItem('admin_access');
             localStorage.removeItem('admin_refresh');
             localStorage.removeItem('admin');
-            setIsLoggedIn(false);
+            
             navigate('/admin')
             toast.success('Logout success');
         }

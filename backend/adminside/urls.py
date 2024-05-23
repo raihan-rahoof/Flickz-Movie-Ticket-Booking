@@ -10,7 +10,7 @@ urlpatterns = [
     path('admin/user-block-unblock/<int:id>/',BlockUnblockUser.as_view(),name='user-block-unblock'),
 
     path('admin/add-movies/',MovieListCreateAPIView.as_view(),name = 'movie-list-create'),
-    path('admin/update-movie/',MovieupdateView.as_view(),name="movie-update"),
+    path('admin/update-movie/<int:pk>/',MovieupdateView.as_view(),name="movie-update"),
     path('admin/theatres-list',TheatreListView.as_view(),name='theatre-list'),
     path('admin/theatres-request-list',TheatreRequestsView.as_view(),name='theatre-request-list'),
     path('admin/view-theatre/<int:pk>/',TheatreDetailView.as_view(),name='theatre-detail-view'),
