@@ -108,12 +108,17 @@ class LogoutApiView(GenericAPIView):
 
 
 class TestingAuthenticatedReq(GenericAPIView):
-    permission_classes=[IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        if not request.user.is_active:
+            data = {
+                'msg': 'User is inactive'
+            }
+            return Response(data, status=status.HTTP_403_FORBIDDEN)
 
-        data={
-            'msg':'its works'
+        data = {
+            'msg': 'It works'
         }
         return Response(data, status=status.HTTP_200_OK)
 

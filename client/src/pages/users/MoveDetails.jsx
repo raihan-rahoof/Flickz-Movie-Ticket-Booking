@@ -33,7 +33,7 @@ function MoveDetails() {
 
   return (
     <>
-    <div className="cover-container" style={{ backgroundImage: `url(${movie.cover})` }}>
+    <div className="cover-container" style={{ backgroundImage: `url(${movie.cover_image})` }}>
         <div className="cover-overlay"></div>
     </div>
     <MoiveInfo flim={movie}/>

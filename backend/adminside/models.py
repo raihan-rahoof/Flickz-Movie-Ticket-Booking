@@ -4,7 +4,7 @@ from django.db import models
 class Movie(models.Model):
     title = models.CharField(max_length=255,null=True,blank=True)
     poster = models.ImageField(upload_to='posters/',null=True,blank=True)
-    cover = models.ImageField(upload_to='covers/',null=True,blank=True)
+    cover_image = models.ImageField(upload_to='covers/',null=True,blank=True)
     trailer_link = models.URLField(null=True,blank=True)
     duration = models.CharField(max_length=100,null=True,blank=True)
     cast = models.CharField(max_length=255,null=True,blank=True)

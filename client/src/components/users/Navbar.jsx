@@ -41,12 +41,24 @@ function Navbar() {
         try {
             const res = await axiosInstance.get('/auth/testauth/');
             if (res.status === 200) {
-                console.log(res.data);
+                console.log('User is active:', res.data);
             }
         } catch (error) {
-            console.error('Error while testing authentication:', error);
+            if (error.response && error.response.status === 401) {
+                // User is inactive or unauthorized
+                if (error.response.data.code === 'user_inactive') {
+                    handleLogout();
+                    toast.error('User is inactive. Logging out...');
+                } else {
+                    handleLogout();
+                    toast.error('Unauthorized. Logging out...');
+                }
+            } else {
+                console.error('Error while testing authentication:', error);
+                handleLogout();
+            }
         }
-    }
+    };
 
     return (
         <>

@@ -68,7 +68,7 @@ class MovieListCreateAPIView(generics.ListCreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
 
-class MovieupdateView(generics.RetrieveUpdateAPIView):
+class MovieupdateView(generics.RetrieveUpdateDestroyAPIView):
      queryset=Movie.objects.all()
      serializer_class = MovieSerializer
      lookup_field = 'pk'
@@ -107,4 +107,3 @@ class TheatreAllowOrDisallow(generics.RetrieveUpdateAPIView):
 
           serializer = self.get_serializer(theatre)
           return Response(serializer.data,status=status.HTTP_200_OK)
-     

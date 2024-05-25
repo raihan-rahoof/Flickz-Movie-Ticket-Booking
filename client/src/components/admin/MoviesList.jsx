@@ -3,12 +3,14 @@ import { Link } from 'react-router-dom';
 import createAxiosInstance from '../../utlis/axiosinstance';
 import toast from 'react-hot-toast';
 import { Modal, Image, Input, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Textarea } from "@nextui-org/react";
+import Swal from 'sweetalert2';
 
 function MoviesList() {
     const [movies, setMovies] = useState([]);
     const axiosInstance = createAxiosInstance('admin');
     const [selectedMovie, setMovie] = useState(null);
     const [newPoster, setNewPoster] = useState(null);
+    const [newCover,setNewCover] = useState(null)
     const [originalMovie, setOriginalMovie] = useState(null);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -30,6 +32,11 @@ function MoviesList() {
         setNewPoster(file);
     };
 
+    const handleCoverChange = (e) => {
+        const file = e.target.files[0];
+        setNewCover(file);
+    };
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setMovie((prevMovie) => ({
@@ -40,7 +47,7 @@ function MoviesList() {
 
     const handleUpdate = async () => {
         
-        const changes = newPoster || Object.keys(selectedMovie).some(key => selectedMovie[key] !== originalMovie[key]);
+        const changes = newPoster || newCover || Object.keys(selectedMovie).some(key => selectedMovie[key] !== originalMovie[key]);
 
         if (!changes) {
             toast('No changes to update');
@@ -59,17 +66,42 @@ function MoviesList() {
         formData.append('trailer_link', selectedMovie.trailer_link);
         if (newPoster) {
             formData.append('poster', newPoster);
+        } if (newCover) {
+            formData.append('cover_image', newCover);
         }
 
         try {
             await axiosInstance.put(`/cadmin/admin/update-movie/${selectedMovie.id}/`, formData);
             toast.success('Movie updated successfully');
             fetchMovies();
-            onOpenChange(false); // Close the modal
+            onOpenChange(false); 
         } catch (error) {
             toast.error('Failed to update the movie');
         }
     };
+
+    const handleDeleteMovie = (movieId , movieName) =>{
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+          }).then(async(result) => {
+            if (result.isConfirmed) {
+                try{
+                    await axiosInstance.delete(`/cadmin/admin/update-movie/${movieId}/`)
+                    toast.success(`${movieName} Deleted Successfully`)
+                    fetchMovies()
+                }catch(error){
+                    toast.error('Failed to Delete the Movie')
+                }
+              
+            }
+          });
+    }
 
     return (
         <>
@@ -102,7 +134,7 @@ function MoviesList() {
                                     <td className="border border-gray-200 px-4 py-2 text-white">{movie.release_date}</td>
                                     <td className="border border-gray-200 px-4 py-2 text-white">
                                         <Button onPress={() => { onOpen(); setMovie(movie); setOriginalMovie({ ...movie }); }} size='sm' radius='full' className="bg-blue-500 hover:bg-blue-700 text-white font-bold h-[2.5rem]"><box-icon name='edit' color='#ffffff'></box-icon></Button>
-                                        <Button size='sm' radius='full' className="bg-red-500 hover:bg-red-700 text-white font-bold h-[2.5rem]"><box-icon name='trash' color='#ffffff'></box-icon></Button>
+                                        <Button onClick={()=>handleDeleteMovie(movie.id,movie.title)} size='sm' radius='full' className="bg-red-500 hover:bg-red-700 text-white font-bold h-[2.5rem]"><box-icon name='trash' color='#ffffff'></box-icon></Button>
                                     </td>
                                 </tr>
                             ))}
@@ -204,6 +236,20 @@ function MoviesList() {
                                         name="trailer_link"
                                         onChange={handleInputChange}
                                         endContent={<i className="fa-brands fa-youtube text-red-500"></i>}
+                                    />
+                                    <div className="mt-2 flex justify-center align-middle">
+                                        <Image
+                                            isZoomed
+                                            width={240}
+                                            alt="Failed to Fetch"
+                                            src={newCover ? URL.createObjectURL(newCover) : selectedMovie.cover_image}
+                                        />
+                                    </div>
+                                    <input
+                                        onChange={handleCoverChange}
+                                        className="block w-[15rem] ml-[5rem] text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                                        id="file_input"
+                                        type="file"
                                     />
                                 </ModalBody>
                                 <ModalFooter>
