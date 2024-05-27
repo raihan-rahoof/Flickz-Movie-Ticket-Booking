@@ -24,6 +24,7 @@ import TheatreOtp from './pages/theatre/TheatreOtp'
 import TheatreList from './pages/admin/theatre/TheatreList'
 import Theatre from './pages/theatre/Theatre';
 import TheatreDashboard from './pages/theatre/theatreManagment/TheatreDashboard';
+import UserProfile from './pages/users/Profile/UserProfile';
 
 
 const router = createBrowserRouter(
@@ -38,6 +39,7 @@ const router = createBrowserRouter(
     <Route path='/reset-password' element={<ResetPassword/>}/>
     <Route path='/reset-password-confirm/:uid/:token' element={<ChangePassword/>}/>
     <Route path='/movie/:id' element={<MoveDetails/>}/>
+    <Route path='/user-profile' element={<UserProfile/>}/>
 
     <Route path='/admin' element={<AdminLogin/>}/>
     <Route path='/admin/user-list' element={<UserPage/>}/>

@@ -4,6 +4,8 @@ import { Link, Navigate, useNavigate } from 'react-router-dom';
 import createAxiosInstance from '../../utlis/axiosinstance';
 import { toast } from 'react-toastify';
 import AuthContext from '../../Context/AuthContext';
+import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar} from "@nextui-org/react";
+
 
 function Navbar() {
     
@@ -78,7 +80,41 @@ function Navbar() {
                             <input type="text" id="search-navbar" className="hover:border-blue-500 block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search..."/>
                         </div>
                         <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-                            { isLoggedIn ? <button onClick={handleLogout} className="login-btn text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center ">Logout</button> : 
+                            { isLoggedIn ? 
+
+<Dropdown placement="bottom-end">
+<DropdownTrigger>
+  <Avatar
+    isBordered
+    as="button"
+    color="primary"
+    className="transition-transform"
+    src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+  />
+</DropdownTrigger>
+<DropdownMenu aria-label="Profile Actions" variant="flat">
+  <DropdownItem key="profile" className="h-14 gap-2">
+    <p className="font-semibold">Signed in as</p>
+    <p className="font-semibold">{user.email}</p>
+  </DropdownItem>
+  <DropdownItem key="settings">
+   Profile
+  </DropdownItem>
+  
+  <DropdownItem key="analytics">
+    Bookings
+  </DropdownItem>
+  
+  <DropdownItem key="help_and_feedback">
+  Rewards
+  </DropdownItem>
+  <DropdownItem key="logout" color="danger" onClick={handleLogout}>
+    Log Out
+  </DropdownItem>
+</DropdownMenu>
+</Dropdown>
+                            
+                            : 
                             <Link to='/login' className="login-btn text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center ">Login</Link>
                             }
                         </div>

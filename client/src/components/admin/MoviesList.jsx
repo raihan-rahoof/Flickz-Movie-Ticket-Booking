@@ -4,6 +4,7 @@ import createAxiosInstance from '../../utlis/axiosinstance';
 import toast from 'react-hot-toast';
 import { Modal, Image, Input, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Textarea } from "@nextui-org/react";
 import Swal from 'sweetalert2';
+import YouTube from 'react-youtube';
 
 function MoviesList() {
     const [movies, setMovies] = useState([]);
@@ -13,6 +14,9 @@ function MoviesList() {
     const [newCover,setNewCover] = useState(null)
     const [originalMovie, setOriginalMovie] = useState(null);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const {isOpen: isYoutubeOpen , onOpen:OnYoutubeOpen , onOpenChange:onYoutubeOpenChange} = useDisclosure()
+    const [videoId, setVideoId] = useState(null);
+
 
     useEffect(() => {
         fetchMovies();
@@ -102,6 +106,36 @@ function MoviesList() {
             }
           });
     }
+
+    const handleYoutubeClick = (trailerLink) => {
+        console.log('YouTube icon clicked'); // Debugging log
+        const videoId = extractYouTubeVideoId(trailerLink);
+        if (videoId) {
+            console.log('Extracted video ID:', videoId); // Debugging log
+            setVideoId(videoId);
+            OnYoutubeOpen();
+        } else {
+            toast.error('Invalid YouTube URL');
+        }
+    };
+
+    const opts = {
+        height: '390',
+        width: '640',
+        playerVars: {
+          autoplay: 1,
+          rel:0,
+          iv_load_policy:3,
+          
+        },
+      };
+
+    const extractYouTubeVideoId = (url) => {
+        const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/;
+        const match = url.match(regex);
+        return match ? match[1] : null;
+    };
+
 
     return (
         <>
@@ -235,7 +269,7 @@ function MoviesList() {
                                         labelPlacement='outside'
                                         name="trailer_link"
                                         onChange={handleInputChange}
-                                        endContent={<i className="fa-brands fa-youtube text-red-500"></i>}
+                                        endContent={<i onClick={()=> handleYoutubeClick(selectedMovie.trailer_link)} className="fa-brands fa-youtube cursor-pointer text-red-500"></i>}
                                     />
                                     <div className="mt-2 flex justify-center align-middle">
                                         <Image
@@ -265,6 +299,23 @@ function MoviesList() {
                     </ModalContent>
                 </Modal>
             )}
+
+
+            {videoId && (
+                            <Modal isOpen={isYoutubeOpen} size='3xl' onOpenChange={onYoutubeOpenChange}>
+                                <ModalContent>
+                                    <ModalHeader className="flex flex-col gap-1">Movie Trailer</ModalHeader>
+                                    <ModalBody>
+                                        <YouTube className='flex justify-center align-middle ' videoId={videoId} opts={opts} />
+                                    </ModalBody>
+                                    <ModalFooter>
+                                        <Button color="danger" onPress={() => onYoutubeOpenChange(false)}>
+                                            Close
+                                        </Button>
+                                    </ModalFooter>
+                                </ModalContent>
+                            </Modal>
+                        )}
         </>
     );
 }
