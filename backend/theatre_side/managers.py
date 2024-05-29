@@ -1,9 +1,23 @@
-from django.contrib.auth.models import  BaseUserManager
+from django.contrib.auth.models import BaseUserManager
 from django.utils.translation import gettext_lazy as _
 
 
 class TheatreManager(BaseUserManager):
-    def create_theatre(self, name, owner_name, email, phone_number, password, address, city, district, state, pincode, google_maps_link, **extra_fields):
+    def create_theatre(
+        self,
+        name,
+        owner_name,
+        email,
+        phone_number,
+        password,
+        address,
+        city,
+        district,
+        state,
+        pincode,
+        google_maps_link,
+        **extra_fields
+    ):
         if not name:
             raise ValueError(_("Theatre name is required"))
         if not owner_name:

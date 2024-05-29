@@ -25,6 +25,7 @@ import TheatreList from './pages/admin/theatre/TheatreList'
 import Theatre from './pages/theatre/Theatre';
 import TheatreDashboard from './pages/theatre/theatreManagment/TheatreDashboard';
 import UserProfile from './pages/users/Profile/UserProfile';
+import TheatreShows from './pages/theatre/theatreManagment/TheatreShows';
 
 
 const router = createBrowserRouter(
@@ -39,7 +40,7 @@ const router = createBrowserRouter(
     <Route path='/reset-password' element={<ResetPassword/>}/>
     <Route path='/reset-password-confirm/:uid/:token' element={<ChangePassword/>}/>
     <Route path='/movie/:id' element={<MoveDetails/>}/>
-    <Route path='/user-profile' element={<UserProfile/>}/>
+    <Route path='/user-profile' element={<AuthProvider><UserProfile/></AuthProvider>}/>
 
     <Route path='/admin' element={<AdminLogin/>}/>
     <Route path='/admin/user-list' element={<UserPage/>}/>
@@ -53,6 +54,7 @@ const router = createBrowserRouter(
     <Route path='/theatre/login' element={<TheatreLogin/>}/>
     <Route path='/theatre/verify-email' element={<TheatreOtp/>}/>
     <Route path='/theatre/dashboard' element={<TheatreDashboard/>}/>
+    <Route path='/theatre/shows' element={<TheatreShows/>}/>
      
   </Route>
     
