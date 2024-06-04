@@ -13,7 +13,9 @@ function TheatreListTable() {
 
   useEffect(() => {
     fetchTheatreRequests();
-  }, [requests]);
+  }, []);
+
+  console.log(requests);
 
   const fetchTheatreRequests = async () => {
     try {
@@ -197,7 +199,7 @@ function TheatreListTable() {
                     </div>
                     <div className="mb-5">
                       <label htmlFor="details" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Theatre Email</label>
-                      <input type="text" disabled readOnly id="details" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" value={theatre.email} />
+                      <input type="text" disabled readOnly id="details" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" value={theatre.user.email} />
                     </div>
                     <div className="mb-5">
                       <label htmlFor="details" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Phone</label>

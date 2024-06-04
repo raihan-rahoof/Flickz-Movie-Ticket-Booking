@@ -70,9 +70,14 @@ class MovieSerializer(serializers.ModelSerializer):
 
 
 #-----------------------Theatre side serialisers----------------------------------
-    
-class ThatreListSerializer(serializers.ModelSerializer):
+class UserSerialiser(serializers.ModelSerializer):
+    class Meta:
+        model=User
+        fields = ['email']
 
+
+class ThatreListSerializer(serializers.ModelSerializer):
+    user = UserSerialiser(read_only = True)
     class Meta:
         model = Theatre
-        exclude = ['groups', 'user_permissions', 'password','is_superuser','last_login']
+        fields = '__all__'

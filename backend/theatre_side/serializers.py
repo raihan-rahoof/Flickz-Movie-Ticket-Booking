@@ -1,95 +1,108 @@
+from adminside.models import Movie
 from rest_framework import serializers
-from rest_framework.exceptions import AuthenticationFailed
-from rest_framework_simplejwt.tokens import RefreshToken
-
-from .models import Theatre,Shows
-
+from user_auth.models import User
+from rest_framework.exceptions import AuthenticationFailed,ValidationError
+from .models import Shows, Theatre
+from django.contrib.auth import authenticate
 
 class TheatreRegistrationSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(write_only=True)
+    password = serializers.CharField(write_only=True)
+
     class Meta:
         model = Theatre
-        fields = (
+        fields = [
+            "email",
+            "password",
             "theatre_name",
             "owner_name",
-            "email",
+            "license",
             "phone_number",
-            "password",
             "address",
             "city",
             "district",
             "state",
             "pincode",
             "google_maps_link",
-        )
-        extra_kwargs = {"password": {"write_only": True}}
+        ]
 
     def create(self, validated_data):
-        password = validated_data.pop("password", None)
-        password_confirm = validated_data.pop("password_confirm", None)
-        if password and password_confirm and password != password_confirm:
-            raise serializers.ValidationError(
-                {"password_confirm": "Passwords must match."}
-            )
-        instance = self.Meta.model(**validated_data)
-        if password is not None:
-            instance.set_password(password)
-        instance.save()
-        return instance
+        email = validated_data.pop("email")
+        password = validated_data.pop("password")
+        user = User.objects.create_theatre_user(email=email, password=password)
+        theatre_profile = Theatre.objects.create(user=user, **validated_data)
+        return theatre_profile
 
 
 class TheatreLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
-    password = serializers.CharField(write_only=True)
-    access_token = serializers.CharField(read_only=True)
-    refresh_token = serializers.CharField(read_only=True)
+    password = serializers.CharField(max_length=128, write_only=True)
+    access_token = serializers.CharField(max_length=255, read_only=True)
+    refresh_token = serializers.CharField(max_length=255, read_only=True)
 
     def validate(self, attrs):
-        email = attrs.get("email")
-        password = attrs.get("password")
+        email = attrs.get('email')
+        password = attrs.get('password')
+        request = self.context.get('request')
 
         try:
-            theatre = Theatre.objects.get(email=email)
-        except Theatre.DoesNotExist:
-            raise AuthenticationFailed("Invalid login credentials")
+            user = User.objects.get(email=email)
+            theatre = Theatre.objects.get(user=user)
+        except User.DoesNotExist:
+            raise AuthenticationFailed('Invalid Credentials , Please try again')
 
-        if not theatre.check_password(password):
-            raise AuthenticationFailed("Invalid login credentials")
+        if user.user_type != 'theatre':
+            raise AuthenticationFailed('Invalid credentials')
 
+        if not user.is_active and not theatre.is_active:
+            raise AuthenticationFailed('Your account is Blocked by the Adminstration for some reason')
+
+       
+        
+        if not user.is_verified and not theatre.is_verified:
+            raise AuthenticationFailed(
+                "Your account is Out of verification"
+            )
+        
+        theatre_profile = authenticate(request,email=email,password=password,user_type='theatre')
+        if not theatre_profile:
+            raise AuthenticationFailed(
+                "Invalid Credentials"
+            )
         if not theatre.admin_allow:
             raise AuthenticationFailed(
-                "Please allow up to 24 hours for your request to be reviewed by our administration team. Upon approval, you will receive a notification via email."
+                "Your account is currently pending review by our administration team. We will update you on Mail with the status of your account approval within one business day. Thank you for your patience."
             )
-
-        if not theatre.is_active:
-            raise AuthenticationFailed(
-                "Your Account has been blocked.Connect us for more details"
-            )
-
-        tokens = theatre.tokens()
-
+        
         return {
-            "email": theatre.email,
-            "theatre_name": theatre.theatre_name,
-            "access_token": str(tokens.get("access")),
-            "refresh_token": str(tokens.get("refresh")),
+            'email': user.email,
+            'full_name': user.get_full_name,
+            'access_token': user.tokens().get('access'),
+            'refresh_token': user.tokens().get('refresh'),
         }
+# ------------- Show Serialiser ---------------------------
 
 
-class TheatreLogoutSerializer(serializers.Serializer):
-    refresh_token = serializers.CharField()
-
-    def validate(self, attrs):
-        self.refresh_token = attrs.get("refresh_token")
-        return attrs
+class ShowMovieSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Movie
+        fields = "__all__"
 
 
-#------------- Show Serialiser ---------------------------
-    
-
-class TheatreShowSerialiser(serializers.ModelSerializer):
+class ShowCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shows
-        fields = '__all__'
+        fields = "__all__"
 
-    def create(self, validated_data):
-        return Shows.objects.create(**validated_data)
+
+class ShowListSerializer(serializers.ModelSerializer):
+    movie = ShowMovieSerializer()
+
+    class Meta:
+        model = Shows
+        fields = "__all__"
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        # Customize representation if needed
+        return data

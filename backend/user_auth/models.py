@@ -21,6 +21,12 @@ AUTH_PROVIDERS = {"email": "email", "google": "google"}
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+
+    USER_TYPE_CHOICES = (
+        ('normal','Normal User'),
+        ('theatre','Theatre')
+    )
+
     first_name = models.CharField(
         _("First Name"), max_length=100, blank=True, null=True
     )
@@ -36,7 +42,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         null=True,
         unique=True,
     )
-    
+
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_verified = models.BooleanField(default=False)
@@ -44,6 +50,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(auto_now_add=True)
     auth_provider = models.CharField(
         max_length=50, blank=False, null=False, default=AUTH_PROVIDERS.get("email")
+    )
+    user_type = models.CharField(
+        max_length=10, choices=USER_TYPE_CHOICES, default="normal"
     )
 
     USERNAME_FIELD = "email"

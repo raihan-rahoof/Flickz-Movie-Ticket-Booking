@@ -19,13 +19,18 @@ function TheatreRegister() {
     district: '',
     city: '',
     pincode: '',
+    license:null,
     google_maps_link: '',
  });
 
  const [isLoading,setLoading] = useState(false)
 
  const handleChange = (e) => {
+  if(e.target.name == 'license'){
+    setFormData({...formData,[e.target.name]:e.target.files[0]})
+  }else{
   setFormData({ ...formData, [e.target.name]: e.target.value });
+  }
 };
 
 console.log(formData);
@@ -53,10 +58,24 @@ console.log(formData);
     toast.error("Invalid pincode. It should be 6 digits.");
     return;
   }
+
+  if (!formData.license){
+    toast.error('Provide your Theatre license');
+    return ;
+  }
+
+  const data = new FormData();
+  for (const key in formData) {
+    data.append(key, formData[key]);
+  }
   
   try {
     setLoading(true)
-    const response = await axios.post('http://127.0.0.1:8000/api/v1/theatre/register/', formData);
+    const response = await axios.post('http://127.0.0.1:8000/api/v1/theatre/register/', data,{
+      headers:{
+        "Content-Type":'multipart/form-data',
+      }
+    });
 
     if (response.status == 201){
       setLoading(false)
@@ -110,9 +129,17 @@ console.log(formData);
       </div>
     </div>
 
-    <div>
-      <label class="text-white"> Theatre Address </label>
-      <textarea required type="text" name='address' onChange={handleChange} class="mt-2 h-12 w-full rounded-md bg-gray-700 px-3 text-white" />
+    <div class="grid gap-3 md:grid-cols-2">
+      <div>
+         <label class="text-white"> Theatre Address </label>
+        <textarea required type="text" name='address' onChange={handleChange} class="mt-2 h-12 w-full rounded-md bg-gray-700 px-3 text-white" />
+      </div>
+      <div>
+       <label class="text-white">License</label>
+       <input type="file" name='license' onChange={handleChange}
+        class="w-full text-gray-500 mt-2 font-medium text-base bg-gray-700 file:cursor-pointer cursor-pointer file:border-0 file:py-2.5 file:px-4 file:mr-4 file:bg-gray-500 file:hover:bg-gray-700 file:text-white rounded" />
+
+      </div>
     </div>
 
     <div class="grid gap-3 md:grid-cols-2">

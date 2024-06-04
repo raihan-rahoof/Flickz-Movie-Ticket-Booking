@@ -24,7 +24,7 @@ class AdminTokenObtainPairView(TokenObtainPairView):
 
 
 class UserListView(generics.ListAPIView):
-        queryset = User.objects.filter(is_superuser=False)
+        queryset = User.objects.filter(is_superuser=False,user_type='normal')
         serializer_class = UserListSerializer
         permission_classes = [IsAdminUser]
 

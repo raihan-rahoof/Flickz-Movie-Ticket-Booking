@@ -74,12 +74,17 @@ class LoginSerializer(serializers.Serializer):
         email = attrs.get("email")
         password = attrs.get("password")
         request = self.context.get("request")
-        print(email, password)
-        check_block = User.objects.get(email=email)
-        if not check_block.is_active:
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            raise AuthenticationFailed("Invalid credentials. Please try again.")
+        if user.user_type != 'normal':
+            raise AuthenticationFailed('No Account with This Credentials')
+        elif not user.is_active:
             raise AuthenticationFailed("Your Account has been Blocked due some Reason")
-        user = authenticate(request, email=email, password=password)
-        print(user)
+        user = authenticate(request, email=email, password=password, user_type="normal")
+        
         if not user:
             raise AuthenticationFailed("invalid credentials try again")
         if not user.is_verified:

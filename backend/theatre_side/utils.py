@@ -4,18 +4,27 @@ from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from datetime import datetime
 from .models import Theatre,OneTimePasswordTheatre
+from django.utils.translation import gettext_lazy as _
+from user_auth.models import User
 
 def send_generated_otp_to_email(email): 
     subject = "One time passcode for Email verification"
     otp=random.randint(1000, 9999)
     date = datetime.now().strftime("%Y-%m-%d")
     current_site="flickz.com"
-    theatre = Theatre.objects.get(email=email)
+    try:
+        user = User.objects.get(email=email)
+        theatre = Theatre.objects.get(user=user)
+    except User.DoesNotExist:
+        raise ValueError(_("User with this email does not exist"))
+    except Theatre.DoesNotExist:
+        raise ValueError(_("Theatre profile associated with this user does not exist"))
+
     email_body= render_to_string('email_otp.html',{'user':theatre,'otp':otp,'current_site':current_site,'date':date})
     from_email=settings.EMAIL_HOST
     OneTimePasswordTheatre.objects.create(theatre=theatre, code=otp)
-    #send the email 
-    d_email=EmailMessage(subject=subject, body=email_body, from_email=from_email, to=[theatre.email])
+    # send the email
+    d_email=EmailMessage(subject=subject, body=email_body, from_email=from_email, to=[theatre.user.email])
     d_email.content_subtype = "html"
     d_email.send()
 

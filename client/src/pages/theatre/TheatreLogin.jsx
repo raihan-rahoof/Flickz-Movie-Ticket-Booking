@@ -51,14 +51,19 @@ function TheatreLogin() {
             }catch(error){
               if (error.response) {
                 const errorMessage = error.response.data.detail;
-                Swal.fire({
-                  
+                const check_message = "Your account is currently pending review by our administration team. We will update you on Mail with the status of your account approval within one business day. Thank you for your patience."
+                if (errorMessage === check_message){
+                  Swal.fire({
                   text: errorMessage,
                   imageUrl: "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExeW9vd2lhcXVndTVkZHphdTh5NmxjZmR1cXlleHphZmNkZHVzd2J3NyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/HqqUPmqVuo4UgIZ88g/giphy.gif",
                   imageWidth: 400,
                   imageHeight: 300,
                   imageAlt: "Custom image"
                 });
+                }else{
+                  toast.error(errorMessage)
+                }
+                
               } else if (error.request) {
                 toast.error('No response from server. Please try again later.');
               } else {
