@@ -17,25 +17,25 @@ import {
   useDisclosure,
   Input,
 } from '@nextui-org/react';
-import axios from 'axios';
 import toast from 'react-hot-toast';
+import createAxiosInstance from '../../utlis/axiosinstance';
 
 function TheatreShowCards() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [shows,setShows]=useState([])
+  const [shows, setShows] = useState([]);
   const [movieList, setMovieList] = useState([]);
   const [formData, setFormData] = useState({
     show_name: '',
     movie: null,
     screen: '',
-    date:null,
+    date: null,
     start_time: null,
     end_time: null,
   });
-  
 
+  const axiosInstance = createAxiosInstance('theatre');
+  console.log(formData);
   const handleInputChange = (field, value) => {
-    
     setFormData((prevFormData) => ({
       ...prevFormData,
       [field]: value,
@@ -43,35 +43,30 @@ function TheatreShowCards() {
   };
 
   const handleSave = async () => {
-  try {
-    
-    const simplifiedFormData = {
-      show_name: formData.show_name,
-      movie:  formData.movie , 
-      screen: formData.screen,
-      date: formData.date,
-      start_time: formData.start_time,
-      end_time: formData.end_time,
-    };
+    try {
+      const simplifiedFormData = {
+        show_name: formData.show_name,
+        movie: formData.movie,
+        screen: formData.screen,
+        date: formData.date,
+        start_time: formData.start_time,
+        end_time: formData.end_time,
+      };
 
-    console.log(simplifiedFormData);
-
-    const response = await axios.post('http://localhost:8000/api/v1/theatre/shows/', simplifiedFormData);
-    if (response.status === 201) {
-      toast.success('New Show Added');
-      onOpenChange();
-    } else {
-      toast.error('Please Try again One more time');
+      const response = await axiosInstance.post('theatre/shows/', simplifiedFormData);
+      if (response.status === 201) {
+        toast.success('New Show Added');
+        onOpenChange();
+      } else {
+        toast.error('Please Try again One more time');
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error('Failed to add show. Please try again.');
     }
-  } catch (error) {
-    console.log(error);
-    toast.error('Failed to add show. Please try again.');
-  }
-};
+  };
 
-
-  const handleMovieSelect = (movie) => {
-    const movieId = movie.id
+  const handleMovieSelect = (movieId) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
       movie: movieId,
@@ -81,11 +76,11 @@ function TheatreShowCards() {
   useEffect(() => {
     fetchMovies();
     fetchShows();
-  }, [shows]);
+  }, []);
 
   const fetchMovies = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/v1/theatre/view-movies');
+      const response = await axiosInstance.get('theatre/view-movies');
       setMovieList(response.data);
     } catch (error) {
       toast.error('Failed to fetch movies, please refresh the page.');
@@ -94,16 +89,12 @@ function TheatreShowCards() {
 
   const fetchShows = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/v1/theatre/shows/list/');
+      const response = await axiosInstance.get('theatre/shows/list/');
       setShows(response.data);
     } catch (error) {
       toast.error('Failed to fetch shows, please refresh the page.');
     }
   };
-
-  
-
-  
 
   return (
     <>
@@ -116,7 +107,7 @@ function TheatreShowCards() {
             <>
               {shows.map((show) => (
                 <Card key={show.id} className='' shadow="sm" isPressable onPress={() => console.log('item pressed')}>
-                  <CardBody className="overflow-visible  p-0">
+                  <CardBody className="overflow-visible p-0">
                     <Image shadow="sm" radius="lg" width="100%" className="w-full object-cover " src={show.movie.poster} />
                   </CardBody>
                   <CardFooter className="text-small flex flex-col justify-center items-start">
@@ -125,12 +116,11 @@ function TheatreShowCards() {
                     <p className="text-default-500">Language : {show.movie.language}</p>
                     <p className="text-default-500">Date : {show.date}</p>
                     <p className="text-default-500">{show.start_time} - {show.end_time}</p>
-
                   </CardFooter>
                 </Card>
               ))}
             </>
-)}
+          )}
         </div>
       </div>
 
@@ -155,11 +145,12 @@ function TheatreShowCards() {
                   label="Movie"
                   placeholder="Select a movie"
                   labelPlacement="outside"
+                  onChange={(e) => handleMovieSelect(e.target.value)}
                   required
                 >
                   {movieList.length > 0 &&
                     movieList.map((movie) => (
-                      <SelectItem key={movie.id} textValue={movie.title} onClick={(e)=>handleMovieSelect(movie)}>
+                      <SelectItem key={movie.id} value={movie.id} textValue={movie.title}>
                         <div className="flex gap-2 items-center">
                           <Image isZoomed width={80} alt="NextUI Fruit Image with Zoom" src={movie.poster} />
                           <div className="flex flex-col">
@@ -170,45 +161,29 @@ function TheatreShowCards() {
                       </SelectItem>
                     ))}
                 </Select>
-
-                <Select
-                  label="Screen"
-                  labelPlacement="outside"
-                  placeholder="Select the Screen available"
-                  onChange={(e) => {handleInputChange('screen', e.target.value);}}
-                  required
-                >
-                  <SelectItem value="Screen 1">Screen 1</SelectItem>
-                  <SelectItem value="Screen 2">Screen 2</SelectItem>
-                  <SelectItem value="Screen 3">Screen 3</SelectItem>
-                </Select>
+                
+                <label htmlFor="release_date" className="block text-white text-sm">Screen</label>
+                <select  class="py-3  px-4 pe-9 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none bg-[#3B3B3B] dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
+                  <option onChange={(e)=> handleInputChange('screen',e.target.option.label)} selected="" disabled>Select Screen</option>
+                  <option value="screen 1">screen 1</option>
+                  <option value="screen 1">screen 2</option>
+                  <option value="screen 1">screen 3</option>
+                </select>
 
                 <div className="mb-4">
-                    <label htmlFor="release_date" className="block text-white text-sm">Show Date</label>
-                    <input type="date" id="release_date" onChange={(e) => handleInputChange('date', e.target.value)} name="date"  className="w-full text-white text-sm rounded-md px-3 py-2" />
+                  <label htmlFor="release_date" className="block text-white text-sm">Show Date</label>
+                  <input type="date" id="release_date" onChange={(e) => handleInputChange('date', e.target.value)} name="date" className="w-full text-white text-sm rounded-md px-3 py-2" />
                 </div>
 
+                <div className="mb-4">
+                  <label htmlFor="start_time" className="block text-white text-sm">Start Time</label>
+                  <TimeInput id="start_time" onChange={(value) => handleInputChange('start_time', value)} />
+                </div>
 
-                <Input
-                  
-                  labelPlacement="outside"
-                  label="Start time"
-                  placeholder="Enter start time"
-                  variant="bordered"
-                  value={formData.start_time}
-                  onChange={(e) => handleInputChange('start_time', e.target.value)}
-                  required
-                />
-                <Input
-                 
-                  labelPlacement="outside"
-                  label="End Time"
-                  placeholder="Enter end time"
-                  variant="bordered"
-                  value={formData.end_time}
-                  onChange={(e) => handleInputChange('end_time', e.target.value)}
-                  required
-                />
+                <div className="mb-4">
+                  <label htmlFor="end_time" className="block text-white text-sm">End Time</label>
+                  <TimeInput id="end_time" onChange={(value) => handleInputChange('end_time', value)} />
+                </div>
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="flat" onPress={onClose}>

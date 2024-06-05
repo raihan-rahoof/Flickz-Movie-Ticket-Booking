@@ -84,8 +84,9 @@ class TheatreShowAddView(generics.CreateAPIView):
 class TheatreShowListView(generics.ListAPIView):
     queryset = Shows.objects.all()
     serializer_class = ShowListSerializer
-
+    permission_classes = [IsAuthenticated]
 
 class TheatreMovieSelectView(generics.ListAPIView):
     queryset = Movie.objects.all()
     serializer_class = ShowMovieSerializer
+    permission_classes = [IsAuthenticated]
