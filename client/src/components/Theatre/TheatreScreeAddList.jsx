@@ -18,6 +18,7 @@ import {
 import toast from 'react-hot-toast';
 import ReactCrop from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
+import { Link } from 'react-router-dom';
 
 function TheatreScreenAddList() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -96,7 +97,7 @@ function TheatreScreenAddList() {
     formDataToSend.append('rows', rows);
     formDataToSend.append('cols', cols);
     if (image) {
-      formDataToSend.append('screen_image', image);
+      formDataToSend.append('image', image);
     }
     formDataToSend.append('sections', JSON.stringify(sections));
 
@@ -192,7 +193,7 @@ function TheatreScreenAddList() {
                 <CardFooter className="text-small flex flex-col justify-center items-start">
                   <h2 className="text-lg font-bold">{screen.name}</h2>
                   <h3 className="font-bold font-md"><i class="fa-solid fa-tv"></i> {screen.quality}</h3>
-                  <p className="text-default-500"><i class="fa-solid fa-volume-low"></i> {screen.sound}</p>
+                  <p className="text-default-500 mt-2"><i class="fa-solid fa-volume-low"></i> {screen.sound}</p>
                   <div className="flex gap-3">
                     
                     {screen.sections.map((section) => (
@@ -201,6 +202,11 @@ function TheatreScreenAddList() {
                       </p>
                     ))}
                   </div>
+                 <Button size='sm' className='mt-2 border bg-transparent border-white hover:bg-indigo-500 hover:border-none' >
+                  <Link to={`/theatre/screens/edit-layout/${screen.id}`}  variant='faded' >
+                    Edit layout
+                  </Link>
+                 </Button>
                 </CardFooter>
               </Card>
             ))}
@@ -278,7 +284,7 @@ function TheatreScreenAddList() {
                 <label className="text-sm">Screen image</label>
                 <input
                   type="file"
-                  name="screen_image"
+                  name="image"
                   id="file-input"
                   className="block w-full border border-gray-200 shadow-sm rounded-lg text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 file:bg-gray-50 file:border-0 file:me-4 file:py-3 file:px-4 dark:file:bg-neutral-700 dark:file:text-neutral-400"
                   onChange={handleInputChange}

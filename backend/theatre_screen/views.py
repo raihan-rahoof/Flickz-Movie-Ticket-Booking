@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics,status
 from rest_framework.response import Response
 from .models import Screen, Seat, Section
-from .serializers import ScreenSerializer
+from .serializers import ScreenSerializer,ScreenLayoutSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
 import json
 # Create your views here.
@@ -14,20 +14,20 @@ class ScreenListCreateView(generics.ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         print(request.data)
         data = request.data
-        screen_name = data.get("screen_name")
-        screen_quality = data.get("screen_quality")
-        screen_sound = data.get("screen_sound")
+        name = data.get("name")
+        quality = data.get("quality")
+        sound = data.get("sound")
         rows = int(data.get("rows", 10))
         cols = int(data.get("cols", 10))
-        screen_image = data.get("screen_image")
+        image = data.get("image")
 
         screen = Screen.objects.create(
-            name=screen_name,
-            quality=screen_quality,
-            sound=screen_sound,
+            name=name,
+            quality=quality,
+            sound=sound,
             rows=rows,
             cols=cols,
-            image=screen_image,
+            image=image,
         )
 
         sections_data = json.loads(data.get("sections", "[]"))
@@ -86,6 +86,36 @@ class ScreenRetrieveUpdateView(generics.RetrieveUpdateDestroyAPIView):
                 )
 
         serializer = self.get_serializer(instance, data=data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, "_prefetched_objects_cache", None):
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+
+
+class ScreenLayoutUpdateView(generics.UpdateAPIView):
+    queryset = Screen.objects.all()
+    serializer_class = ScreenLayoutSerializer
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        data = request.data.copy()
+
+        layout = data.get('layout')
+
+        if isinstance(layout,str):
+            try:
+                layout = json.loads(layout)
+                data['layout']= layout
+            except json.JSONDecodeError:
+                return Response(
+                    {"layout": {"non_field_errors": ["Invalid layout data format."]}},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        serializer = self.get_serializer(instance, data=data, partial=True)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
 

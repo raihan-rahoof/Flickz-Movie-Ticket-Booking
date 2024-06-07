@@ -92,3 +92,11 @@ class ScreenSerializer(serializers.ModelSerializer):
             instance.save()
 
         return instance
+
+
+class ScreenLayoutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Screen
+        fields = ['layout']
+
+    
