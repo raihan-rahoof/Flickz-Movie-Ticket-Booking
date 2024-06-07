@@ -99,6 +99,9 @@ function TheatreShowCards() {
   return (
     <>
       <div className="h-screen p-4 bg-black">
+        <div className="flex pb-8 pt-4">
+          <h1 className="text-3xl font-semibold">Manage Shows</h1>
+        </div>
         <Button className="bg-indigo-500 mb-4" onPress={onOpen}>
           Shows +
         </Button>

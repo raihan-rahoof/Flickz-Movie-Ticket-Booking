@@ -13,9 +13,11 @@ import {
   Button,
   useDisclosure,
   Input,
+  Tooltip,
 } from '@nextui-org/react';
 import toast from 'react-hot-toast';
-import axios from 'axios';
+import ReactCrop from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
 
 function TheatreScreenAddList() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -23,22 +25,23 @@ function TheatreScreenAddList() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedScreen, setSelectedScreen] = useState(null);
   const [formData, setFormData] = useState({
-    screen_name: '',
-    screen_quality: '',
-    screen_sound: '',
-    screen_image: '',
+    name: '',
+    quality: '',
+    sound: '',
+    image: '',
     rows: 10,
     cols: 10,
     sections: [],
   });
+  const [initialFormData, setInitialFormData] = useState(null);
+  const [crop, setCrop] = useState({ aspect: 16 / 9 });
   const axiosInstance = createAxiosInstance('theatre');
-
-  console.log(formData)
 
   const handleInputChange = (e) => {
     const { name, value, files, type } = e.target;
     if (type === 'file') {
       setFormData({ ...formData, [name]: files[0] });
+      setCrop({ src: URL.createObjectURL(files[0]) });
     } else {
       setFormData({ ...formData, [name]: value });
     }
@@ -65,7 +68,13 @@ function TheatreScreenAddList() {
 
   const handleSubmit = async (e) => {
     e.preventDefault;
-    const { screen_name, screen_quality, screen_sound, rows, cols, sections, screen_image } = formData;
+
+    const { name, quality, sound, rows, cols, sections, image } = formData;
+
+    if (!name || !quality || !sound || !rows || !cols || !sections.length) {
+      toast.error('Please fill all the fields');
+      return;
+    }
 
     const totalSectionRows = sections.reduce((total, section) => total + parseInt(section.rows, 10), 0);
 
@@ -74,14 +83,20 @@ function TheatreScreenAddList() {
       return;
     }
 
+    // Check if there are no changes in the form data
+    if (isEditMode && JSON.stringify(formData) === JSON.stringify(initialFormData)) {
+      toast('No changes to update');
+      return;
+    }
+
     const formDataToSend = new FormData();
-    formDataToSend.append('screen_name', screen_name);
-    formDataToSend.append('screen_quality', screen_quality);
-    formDataToSend.append('screen_sound', screen_sound);
+    formDataToSend.append('name', name);
+    formDataToSend.append('quality', quality);
+    formDataToSend.append('sound', sound);
     formDataToSend.append('rows', rows);
     formDataToSend.append('cols', cols);
-    if (screen_image) {
-      formDataToSend.append('screen_image', screen_image);
+    if (image) {
+      formDataToSend.append('screen_image', image);
     }
     formDataToSend.append('sections', JSON.stringify(sections));
 
@@ -139,14 +154,16 @@ function TheatreScreenAddList() {
 
   const handleCardClick = (screen) => {
     setSelectedScreen(screen);
-    setFormData({
-      screen_name: screen.name,
-      screen_quality: screen.quality,
-      screen_sound: screen.sound,
+    const initialData = {
+      name: screen.name,
+      quality: screen.quality,
+      sound: screen.sound,
       rows: screen.rows,
       cols: screen.cols,
       sections: screen.sections,
-    });
+    };
+    setFormData(initialData);
+    setInitialFormData(initialData);
     setIsEditMode(true);
     onOpen();
   };
@@ -159,10 +176,10 @@ function TheatreScreenAddList() {
     <>
       <div className="h-screen p-4 bg-black">
         <div className="flex pb-8 pt-4">
-          <h1 className="text-3xl font-semibold">Manage Screens</h1>
+          <h1 className="text-3xl font-semibold ">Manage Screens</h1>
         </div>
 
-        <Button className="bg-indigo-500 mb-4" onPress={() => { setIsEditMode(false); setFormData({ screen_name: '', screen_quality: '', screen_sound: '', screen_image: '', rows: 10, cols: 10, sections: [] }); onOpen(); }}>
+        <Button className="bg-indigo-500 mb-4" onPress={() => { setIsEditMode(false); setFormData({ name: '', quality: '', sound: '', image: '', rows: 10, cols: 10, sections: [] }); onOpen(); }}>
           Add Screen
         </Button>
         <div className="gap-2 grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1">
@@ -174,12 +191,13 @@ function TheatreScreenAddList() {
                 </CardBody>
                 <CardFooter className="text-small flex flex-col justify-center items-start">
                   <h2 className="text-lg font-bold">{screen.name}</h2>
-                  <h3 className="font-bold font-md">{screen.quality}</h3>
-                  <p className="text-default-500">{screen.sound}</p>
+                  <h3 className="font-bold font-md"><i class="fa-solid fa-tv"></i> {screen.quality}</h3>
+                  <p className="text-default-500"><i class="fa-solid fa-volume-low"></i> {screen.sound}</p>
                   <div className="flex gap-3">
+                    
                     {screen.sections.map((section) => (
                       <p key={section.name} className="text-default-500">
-                        {section.name}
+                        <i class="fa-solid fa-bars"></i> {section.name},
                       </p>
                     ))}
                   </div>
@@ -193,7 +211,7 @@ function TheatreScreenAddList() {
         <ModalContent>
           {onClose => (
             <>
-              <ModalHeader className="flex flex-col gap-1">{isEditMode ? 'Edit Screen' : 'Create Your Screen'}</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1 text-indigo-400">{isEditMode ? 'Edit Screen' : 'Create Your Screen'}</ModalHeader>
               <ModalBody>
                 <Input
                   autoFocus
@@ -201,8 +219,8 @@ function TheatreScreenAddList() {
                   label="Screen name"
                   placeholder="Enter screen name"
                   variant="bordered"
-                  name="screen_name"
-                  value={formData.screen_name}
+                  name="name"
+                  value={formData.name}
                   onChange={handleInputChange}
                   required
                 />
@@ -211,8 +229,8 @@ function TheatreScreenAddList() {
                   label="Screen Type"
                   placeholder="e.g., 4k, IMAX, etc."
                   variant="bordered"
-                  name="screen_quality"
-                  value={formData.screen_quality}
+                  name="quality"
+                  value={formData.quality}
                   onChange={handleInputChange}
                   required
                 />
@@ -221,11 +239,19 @@ function TheatreScreenAddList() {
                   label="Sound System"
                   placeholder="e.g., Dolby 3.0, etc."
                   variant="bordered"
-                  name="screen_sound"
-                  value={formData.screen_sound}
+                  name="sound"
+                  value={formData.sound}
                   onChange={handleInputChange}
                   required
                 />
+                <Tooltip content={
+                  <div className="px-1 py-2 w-[10rem]">
+                    <div className="text-small font-bold text-indigo-500">Hey!</div>
+                    <div className="text-tiny">When adding rows and cols make sure you include free spaces also  </div>
+                  </div>
+                }
+                placement='left'
+                >
                 <Input
                   labelPlacement="outside"
                   label="Number of Rows"
@@ -237,6 +263,7 @@ function TheatreScreenAddList() {
                   onChange={handleInputChange}
                   required
                 />
+                </Tooltip>
                 <Input
                   labelPlacement="outside"
                   label="Number of Columns"
@@ -256,6 +283,14 @@ function TheatreScreenAddList() {
                   className="block w-full border border-gray-200 shadow-sm rounded-lg text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 file:bg-gray-50 file:border-0 file:me-4 file:py-3 file:px-4 dark:file:bg-neutral-700 dark:file:text-neutral-400"
                   onChange={handleInputChange}
                 />
+                {formData.screen_image && (
+                  <ReactCrop
+                    src={URL.createObjectURL(formData.screen_image)}
+                    crop={crop}
+                    onChange={(newCrop) => setCrop(newCrop)}
+                  />
+                )}
+
                 <label className="text-sm">Add section</label>
                 {formData.sections.map((section, index) => (
                   <div key={index} className="flex w-full flex-wrap items-end md:flex-nowrap mb-6 md:mb-0 gap-4">
@@ -320,10 +355,10 @@ function TheatreScreenAddList() {
                 </p>
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="flat" onPress={onClose}>
+                <Button color="danger" variant="light" onPress={onClose}>
                   Close
                 </Button>
-                <Button color="primary" onPress={handleSubmit}>
+                <Button className='bg-indigo-500' onPress={handleSubmit}>
                   Save
                 </Button>
               </ModalFooter>

@@ -68,7 +68,7 @@ class ScreenRetrieveUpdateView(generics.RetrieveUpdateDestroyAPIView):
         partial = kwargs.pop("partial", False)
         instance = self.get_object()
         data = request.data.copy()
-
+        print("Received data:", data)
         # Parse sections if they are sent as a string
         sections_data = data.get("sections")
         if isinstance(sections_data, str):
