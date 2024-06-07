@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'adminside',
     'theatre_side',
     'users',
+    'theatre_screen',
 
     
 ]

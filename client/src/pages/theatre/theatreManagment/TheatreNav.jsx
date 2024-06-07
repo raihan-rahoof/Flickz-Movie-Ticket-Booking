@@ -1,6 +1,6 @@
 import React from "react";
 import {Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Link, Button} from "@nextui-org/react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
 import createAxiosInstance from "../../../utlis/axiosinstance";
 
 
@@ -14,9 +14,9 @@ export default function TheatreNav(props) {
 
   const axiosInstance = createAxiosInstance('theatre')
 
-  const handleLogout = async ()=>{
-    const res = await axiosInstance.post('theatre/theatre-logout/',{'refresh_token':refresh , 'access_token':access})
-    if(res.status === 200){
+  const handleLogout = async () => {
+    const res = await axiosInstance.post('theatre/theatre-logout/', { 'refresh_token': refresh, 'access_token': access })
+    if (res.status === 200) {
       localStorage.removeItem('theatre_access');
       localStorage.removeItem('theatre_refresh');
       localStorage.removeItem('theatre');
@@ -32,54 +32,50 @@ export default function TheatreNav(props) {
           className="sm:hidden"
         />
         <NavbarBrand>
-          
           <h1 className="font-bold text-xl ">FLICKZ.</h1>
         </NavbarBrand>
       </NavbarContent>
 
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
         <NavbarItem>
-          <Link color="foreground" className={`hover:cursor-pointer ${props.now === 'dashboard' && 'text-indigo-500' }`}>
+          <RouterLink to='/theatre/dashboard' className={`hover:cursor-pointer ${props.now === 'dashboard' && 'text-indigo-500'}`}>
             Dashboard
-          </Link>
+          </RouterLink>
         </NavbarItem>
         <NavbarItem>
-        <Link color="foreground" className={`hover:cursor-pointer ${props.now === 'Shows' && 'text-indigo-500' }`}>
+          <RouterLink to='/theatre/shows' className={`hover:cursor-pointer ${props.now === 'Shows' && 'text-indigo-500'}`}>
             Shows
-          </Link>
+          </RouterLink>
         </NavbarItem>
         <NavbarItem>
-          <Link color="foreground" className={`hover:cursor-pointer ${props.now === 'screens' && 'text-indigo-500' }`}>
+          <RouterLink to='/theatre/screens' className={`hover:cursor-pointer ${props.now === 'screens' && 'text-indigo-500'}`}>
             Screens
-          </Link>
+          </RouterLink>
         </NavbarItem>
       </NavbarContent>
       <NavbarContent justify="end">
-        
         <NavbarItem>
-          <Button as={Link} onClick={handleLogout} className="bg-indigo-500" href="#" variant="flat">
+          <Button as={RouterLink} onClick={handleLogout} className="bg-indigo-500" to="#">
             Log out
           </Button>
         </NavbarItem>
       </NavbarContent>
       <NavbarMenu>
-        
-          <NavbarMenuItem>
-          <Link color="foreground" className={`${props.now === 'dashboard' && 'text-indigo-500' }`}>
+        <NavbarMenuItem>
+          <RouterLink to='/theatre/dashboard' className={`${props.now === 'dashboard' && 'text-indigo-500'}`}>
             Dashboard
-          </Link>
-          </NavbarMenuItem>
-          <NavbarMenuItem>
-          <Link color="foreground" className={`${props.now === 'Shows' && 'text-indigo-500' }`}>
+          </RouterLink>
+        </NavbarMenuItem>
+        <NavbarMenuItem>
+          <RouterLink to='/theatre/shows' className={`${props.now === 'Shows' && 'text-indigo-500'}`}>
             Shows
-          </Link>
-          </NavbarMenuItem>
-          <NavbarMenuItem>
-          <Link color="foreground" className={`${props.now === 'screens' && 'text-indigo-500' }`}>
+          </RouterLink>
+        </NavbarMenuItem>
+        <NavbarMenuItem>
+          <RouterLink to='/theatre/screens' className={`${props.now === 'screens' && 'text-indigo-500'}`}>
             Screens
-          </Link>
-          </NavbarMenuItem>
-        
+          </RouterLink>
+        </NavbarMenuItem>
       </NavbarMenu>
     </Navbar>
   );

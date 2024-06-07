@@ -5,7 +5,7 @@ import TheatreShowCards from '../../../components/Theatre/TheatreShowCards'
 function TheatreShows() {
   return (
    <>
-   <TheatreNav/>
+   <TheatreNav now="Shows"/>
    <TheatreShowCards/>
    </>
   )

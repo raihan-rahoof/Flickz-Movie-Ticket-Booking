@@ -26,6 +26,7 @@ import Theatre from './pages/theatre/Theatre';
 import TheatreDashboard from './pages/theatre/theatreManagment/TheatreDashboard';
 import UserProfile from './pages/users/Profile/UserProfile';
 import TheatreShows from './pages/theatre/theatreManagment/TheatreShows';
+import TheatreScreens from './pages/theatre/theatreManagment/TheatreScreens';
 
 
 const router = createBrowserRouter(
@@ -55,6 +56,7 @@ const router = createBrowserRouter(
     <Route path='/theatre/verify-email' element={<TheatreOtp/>}/>
     <Route path='/theatre/dashboard' element={<TheatreDashboard/>}/>
     <Route path='/theatre/shows' element={<TheatreShows/>}/>
+    <Route path='/theatre/screens' element={<TheatreScreens/>}/>
      
   </Route>
     
