@@ -36,7 +36,8 @@ function TheatreLogin() {
 
               const theatre = {
                 'theatre_name':response.theatre_name,
-                'theatre_email':response.email
+                'theatre_email':response.email,
+                'theatre_id':response.id,
               }
 
               if(res.status === 200){

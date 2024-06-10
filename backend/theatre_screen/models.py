@@ -1,8 +1,9 @@
 from django.db import models
-
+from user_auth.models import User
 
 # Create your models here.
 class Screen(models.Model):
+    theatre = models.ForeignKey(User ,on_delete=models.CASCADE,null=True)
     name = models.CharField(max_length=100,blank=True,null=True)
     quality = models.CharField(max_length=100,blank=True,null=True)
     sound = models.CharField(max_length=100,blank=True,null=True)

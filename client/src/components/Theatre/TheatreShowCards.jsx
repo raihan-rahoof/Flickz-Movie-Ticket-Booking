@@ -2,10 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Card,
   CardBody,
-  DateInput,
   TimeInput,
-  Select,
-  SelectItem,
   CardFooter,
   Image,
   Modal,
@@ -19,38 +16,109 @@ import {
 } from '@nextui-org/react';
 import toast from 'react-hot-toast';
 import createAxiosInstance from '../../utlis/axiosinstance';
+import Select from 'react-select';
+import formatTime from '../../utlis/formatTime';
+import parseMovieDuration from '../../utlis/movieDuration';
+import formatTime12Hour from '../../utlis/formatTime12';
+import formatDateString from '../../utlis/Dateformat';
+import formatTime12HourInput from '../../utlis/formatTIme12Input';
+
+const customStyles = {
+  control: (provided) => ({
+    ...provided,
+    backgroundColor: '#2c2c2c',
+    borderColor: '#5a5a5a',
+    color: '#fff',
+    minHeight: '48px',
+    borderRadius: '0.8rem',
+  }),
+  menu: (provided) => ({
+    ...provided,
+    backgroundColor: '#2c2c2c',
+    color: '#fff',
+     borderRadius: '0.5rem', 
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    color: '#fff',
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    backgroundColor: state.isSelected ? '#3a3a3a' : state.isFocused ? '#4a4a4a' : '#2c2c2c',
+    color: '#fff',
+  }),
+  input: (provided) => ({
+    ...provided,
+    color: '#fff',
+  }),
+  placeholder: (provided) => ({
+    ...provided,
+    color: '#aaa',
+  }),
+};
+
+
 
 function TheatreShowCards() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [shows, setShows] = useState([]);
   const [movieList, setMovieList] = useState([]);
+  const [screens,setScreens]=useState([])
+  const theatreData = JSON.parse(localStorage.getItem('theatre'));
+  const theatreId = theatreData.theatre_id;
   const [formData, setFormData] = useState({
     show_name: '',
     movie: null,
     screen: '',
+    theatre:theatreId || '',
     date: null,
-    start_time: null,
-    end_time: null,
+     start_time: { hour: 0, minute: 0, second: 0, millisecond: 0 },
+    end_time: { hour: 0, minute: 0, second: 0, millisecond: 0 },
   });
-
-  const axiosInstance = createAxiosInstance('theatre');
   console.log(formData);
+  const axiosInstance = createAxiosInstance('theatre');
   const handleInputChange = (field, value) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
       [field]: value,
     }));
+    if(field === 'start_time' && formData.movie){
+      const duration = parseMovieDuration(formData.movie.duration)
+      const endTime = calculateEndTime(value,duration);
+      setFormData((prevData)=>({
+        ...prevData,
+        end_time:endTime
+      }))
+    }
+  };
+
+  const calculateEndTime = (startTime, duration) => {
+    const startHour = parseInt(startTime.hour, 10);
+    const startMinute = parseInt(startTime.minute, 10);
+    let endHour = startHour + duration.hours;
+    let endMinute = startMinute + duration.minutes;
+    if (endMinute >= 60) {
+      endHour += Math.floor(endMinute / 60);
+      endMinute %= 60;
+    }
+    return {
+      hour: endHour,
+      minute: endMinute,
+      second: 0,
+      millisecond: 0,
+    };
   };
 
   const handleSave = async () => {
     try {
       const simplifiedFormData = {
         show_name: formData.show_name,
-        movie: formData.movie,
-        screen: formData.screen,
+        movie: formData.movie.value,
+        screen: formData.screen.value,
         date: formData.date,
-        start_time: formData.start_time,
-        end_time: formData.end_time,
+        theatre:formData.theatre,
+        start_time: formatTime12Hour(formData.start_time),
+        end_time: formatTime12HourInput(formData.end_time),
       };
 
       const response = await axiosInstance.post('theatre/shows/', simplifiedFormData);
@@ -73,23 +141,55 @@ function TheatreShowCards() {
     }));
   };
 
+  const handleScreenSelect = (screenId)=>{
+    setFormData((prevFormData)=>({
+      ...prevFormData,
+      screen:screenId
+    }))
+  }
+
+
+  const endTime = formatTime(formData.start_time)
+  console.log(endTime || '');
+
   useEffect(() => {
     fetchMovies();
+    fetchScreens();
     fetchShows();
   }, []);
 
   const fetchMovies = async () => {
     try {
       const response = await axiosInstance.get('theatre/view-movies');
-      setMovieList(response.data);
+      const movieOptions = response.data.map(movie=>({
+        value:movie.id,
+        label: movie.title,
+        poster: movie.poster,
+        duration: movie.duration,
+        language: movie.language
+      }))
+      setMovieList(movieOptions);
     } catch (error) {
       toast.error('Failed to fetch movies, please refresh the page.');
     }
   };
 
+  const fetchScreens = async () => {
+    try {
+      const response = await axiosInstance.get('screen/add-screen/');
+      const screenOptions = response.data.map(screen =>({
+        value: screen.id,
+        label: `${screen.name} (${screen.quality}, ${screen.sound})`
+      }))
+      setScreens(screenOptions);
+    } catch (error) {
+      toast.error('Failed to get screens, please refresh the page.');
+    }
+  };
+
   const fetchShows = async () => {
     try {
-      const response = await axiosInstance.get('theatre/shows/list/');
+      const response = await axiosInstance.get('theatre/shows/');
       setShows(response.data);
     } catch (error) {
       toast.error('Failed to fetch shows, please refresh the page.');
@@ -117,8 +217,8 @@ function TheatreShowCards() {
                     <h2 className='text-lg font-bold'>{show.show_name}</h2>
                     <h3 className="font-bold font-md">{show.movie.title}</h3>
                     <p className="text-default-500">Language : {show.movie.language}</p>
-                    <p className="text-default-500">Date : {show.date}</p>
-                    <p className="text-default-500">{show.start_time} - {show.end_time}</p>
+                    <p className="text-default-500">Date : {formatDateString(show.date)}</p>
+                    <p className="text-default-500">{formatTime12Hour(show.start_time)} - {formatTime12Hour(show.end_time)}</p>
                   </CardFooter>
                 </Card>
               ))}
@@ -144,49 +244,35 @@ function TheatreShowCards() {
                   required
                 />
 
+                <label className="block text-white text-sm">Movie</label>
                 <Select
-                  label="Movie"
+                  options={movieList}
+                  onChange={handleMovieSelect}
                   placeholder="Select a movie"
-                  labelPlacement="outside"
-                  onChange={(e) => handleMovieSelect(e.target.value)}
-                  required
-                >
-                  {movieList.length > 0 &&
-                    movieList.map((movie) => (
-                      <SelectItem key={movie.id} value={movie.id} textValue={movie.title}>
-                        <div className="flex gap-2 items-center">
-                          <Image isZoomed width={80} alt="NextUI Fruit Image with Zoom" src={movie.poster} />
-                          <div className="flex flex-col">
-                            <span className="text-small">{movie.title}</span>
-                            <span className="text-tiny text-default-400">{movie.language}</span>
-                          </div>
-                        </div>
-                      </SelectItem>
-                    ))}
-                </Select>
+                  isSearchable
+                  styles={customStyles}
+                />
                 
-                <label htmlFor="release_date" className="block text-white text-sm">Screen</label>
-                <select  class="py-3  px-4 pe-9 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none bg-[#3B3B3B] dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
-                  <option onChange={(e)=> handleInputChange('screen',e.target.option.label)} selected="" disabled>Select Screen</option>
-                  <option value="screen 1">screen 1</option>
-                  <option value="screen 1">screen 2</option>
-                  <option value="screen 1">screen 3</option>
-                </select>
+                <label className="block text-white text-sm">Screen</label>
+                <Select
+                  options={screens}
+                  onChange={handleScreenSelect}
+                  placeholder="Select a movie"
+                  isSearchable
+                   styles={customStyles}
+                />
 
                 <div className="mb-4">
                   <label htmlFor="release_date" className="block text-white text-sm">Show Date</label>
                   <input type="date" id="release_date" onChange={(e) => handleInputChange('date', e.target.value)} name="date" className="w-full text-white text-sm rounded-md px-3 py-2" />
                 </div>
 
-                <div className="mb-4">
-                  <label htmlFor="start_time" className="block text-white text-sm">Start Time</label>
-                  <TimeInput id="start_time" onChange={(value) => handleInputChange('start_time', value)} />
-                </div>
-
-                <div className="mb-4">
-                  <label htmlFor="end_time" className="block text-white text-sm">End Time</label>
-                  <TimeInput id="end_time" onChange={(value) => handleInputChange('end_time', value)} />
-                </div>
+                
+                  <TimeInput label="Start Time" labelPlacement='outside'  onChange={(value) => handleInputChange('start_time', value)} />
+              
+                <label className="block text-white text-sm">End Time</label>
+                  <Input value={formatTime12HourInput(formData.end_time) || ''}  disabled />
+               
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="flat" onPress={onClose}>

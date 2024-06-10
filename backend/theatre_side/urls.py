@@ -7,7 +7,7 @@ from .views import (
     TheatreRegisterView,
     TheatreMovieSelectView,
     TheatreShowAddView,
-    TheatreShowListView,
+    AvailableShows
 )
 
 urlpatterns = [
@@ -19,5 +19,9 @@ urlpatterns = [
     # path("theatre-logout/", TheatreLogoutView.as_view(), name="theatre-logout"),
     path("shows/", TheatreShowAddView.as_view(), name="show-list-create"),
     path("view-movies/", TheatreMovieSelectView.as_view(), name="view-movies"),
-    path("shows/list/", TheatreShowListView.as_view(), name="show-list"),
+    path(
+        "movies/<int:movie_id>/available-shows/",
+        AvailableShows.as_view(),
+        name="available-shows"
+    ),
 ]

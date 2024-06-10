@@ -28,6 +28,7 @@ import UserProfile from './pages/users/Profile/UserProfile';
 import TheatreShows from './pages/theatre/theatreManagment/TheatreShows';
 import TheatreScreens from './pages/theatre/theatreManagment/TheatreScreens';
 import TheatreSeatLayoutEdit from './components/Theatre/TheatreSeatLayoutEdit';
+import AvailabeTheatres from './pages/users/AvailabeTheatres';
 
 
 const router = createBrowserRouter(
@@ -43,6 +44,7 @@ const router = createBrowserRouter(
     <Route path='/reset-password-confirm/:uid/:token' element={<ChangePassword/>}/>
     <Route path='/movie/:id' element={<MoveDetails/>}/>
     <Route path='/user-profile' element={<AuthProvider><UserProfile/></AuthProvider>}/>
+    <Route path='/moive/available-shows/:id' element={<AuthProvider><AvailabeTheatres/></AuthProvider>}/>
 
     <Route path='/admin' element={<AdminLogin/>}/>
     <Route path='/admin/user-list' element={<UserPage/>}/>
@@ -59,6 +61,7 @@ const router = createBrowserRouter(
     <Route path='/theatre/shows' element={<TheatreShows/>}/>
     <Route path='/theatre/screens' element={<TheatreScreens/>}/>
     <Route path='/theatre/screens/edit-layout/:screenId' element={<TheatreSeatLayoutEdit/>}/>
+    
      
   </Route>
     

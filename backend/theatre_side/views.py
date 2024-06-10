@@ -3,6 +3,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from .utils import send_generated_otp_to_email
+from rest_framework.views import APIView
+from django.utils import timezone
+from datetime import date
 
 from .models import OneTimePasswordTheatre, Theatre,Shows
 from .serializers import (
@@ -11,7 +14,8 @@ from .serializers import (
     TheatreRegistrationSerializer,
     ShowMovieSerializer,
     ShowCreateSerializer,
-    ShowListSerializer,
+    ShowListSerializer
+    
 )
 from adminside.models import Movie
 
@@ -76,17 +80,35 @@ class TheatreLoginView(generics.GenericAPIView):
 # ---------------- Shows -----------------
 
 
-class TheatreShowAddView(generics.CreateAPIView):
+class TheatreShowAddView(generics.ListCreateAPIView):
     queryset = Shows.objects.all()
     serializer_class = ShowCreateSerializer
     permission_classes = [IsAuthenticated]
 
-class TheatreShowListView(generics.ListAPIView):
-    queryset = Shows.objects.all()
-    serializer_class = ShowListSerializer
-    permission_classes = [IsAuthenticated]
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return ShowCreateSerializer
+        return ShowListSerializer
+
+    
+
 
 class TheatreMovieSelectView(generics.ListAPIView):
     queryset = Movie.objects.all()
     serializer_class = ShowMovieSerializer
     permission_classes = [IsAuthenticated]
+
+
+# ------------- user side available shows ----------------------
+class AvailableShows(APIView):
+    def get(self,request,movie_id):
+        try:
+            movie = Movie.objects.get(id=movie_id)
+        except Movie.DoesNotExist:
+            return Response({'error':'Movie doesnt exists'},status=status.HTTP_404_NOT_FOUND)
+
+
+        today = timezone.now().date()
+        shows = Shows.objects.filter(movie=movie,date__date__gte=today)
+        serializer = ShowListSerializer(shows,many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)

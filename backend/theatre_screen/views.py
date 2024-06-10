@@ -5,14 +5,16 @@ from .models import Screen, Seat, Section
 from .serializers import ScreenSerializer,ScreenLayoutSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
 import json
+from rest_framework.permissions import IsAuthenticated
+
 # Create your views here.
 class ScreenListCreateView(generics.ListCreateAPIView):
     queryset = Screen.objects.all()
     serializer_class = ScreenSerializer
     parser_classes = (MultiPartParser, FormParser)
+    permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
-        print(request.data)
         data = request.data
         name = data.get("name")
         quality = data.get("quality")
@@ -20,7 +22,7 @@ class ScreenListCreateView(generics.ListCreateAPIView):
         rows = int(data.get("rows", 10))
         cols = int(data.get("cols", 10))
         image = data.get("image")
-
+        theatre = request.user
         screen = Screen.objects.create(
             name=name,
             quality=quality,
@@ -28,6 +30,7 @@ class ScreenListCreateView(generics.ListCreateAPIView):
             rows=rows,
             cols=cols,
             image=image,
+            theatre=theatre
         )
 
         sections_data = json.loads(data.get("sections", "[]"))
@@ -63,6 +66,7 @@ class ScreenListCreateView(generics.ListCreateAPIView):
 class ScreenRetrieveUpdateView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Screen.objects.all()
     serializer_class = ScreenSerializer
+    permission_classes = [IsAuthenticated]
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop("partial", False)
@@ -98,6 +102,7 @@ class ScreenRetrieveUpdateView(generics.RetrieveUpdateDestroyAPIView):
 class ScreenLayoutUpdateView(generics.UpdateAPIView):
     queryset = Screen.objects.all()
     serializer_class = ScreenLayoutSerializer
+    permission_classes = [IsAuthenticated]
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()

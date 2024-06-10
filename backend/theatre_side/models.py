@@ -2,6 +2,8 @@ from adminside.models import Movie
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from theatre_screen.models import Screen
+from user_auth.models import User
 
 
 class Theatre(models.Model):
@@ -44,9 +46,10 @@ class OneTimePasswordTheatre(models.Model):
 class Shows(models.Model):
     show_name = models.CharField(max_length=100, blank=True, null=True)
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
-    screen = models.CharField(max_length=20, blank=True, null=True)
-    date = models.DateTimeField(null=True, blank=True)  
-    start_time = models.TimeField(null=True, blank=True)  
+    screen = models.ForeignKey(Screen,on_delete=models.CASCADE,null=True)
+    theatre = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
+    date = models.DateTimeField(null=True, blank=True)
+    start_time = models.TimeField(null=True, blank=True)
     end_time = models.TimeField(null=True, blank=True)
 
     def __str__(self):
