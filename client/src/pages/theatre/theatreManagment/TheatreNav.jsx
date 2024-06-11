@@ -15,7 +15,7 @@ export default function TheatreNav(props) {
   const axiosInstance = createAxiosInstance('theatre')
 
   const handleLogout = async () => {
-    const res = await axiosInstance.post('theatre/theatre-logout/', { 'refresh_token': refresh, 'access_token': access })
+    const res = await axiosInstance.post('/auth/logout/', { 'refresh_token': refresh, 'access_token': access })
     if (res.status === 200) {
       localStorage.removeItem('theatre_access');
       localStorage.removeItem('theatre_refresh');

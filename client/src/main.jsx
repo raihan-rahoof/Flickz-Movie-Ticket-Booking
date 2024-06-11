@@ -29,7 +29,7 @@ import TheatreShows from './pages/theatre/theatreManagment/TheatreShows';
 import TheatreScreens from './pages/theatre/theatreManagment/TheatreScreens';
 import TheatreSeatLayoutEdit from './components/Theatre/TheatreSeatLayoutEdit';
 import AvailabeTheatres from './pages/users/AvailabeTheatres';
-
+import SelectSeat from './pages/users/SelectSeat';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -45,6 +45,7 @@ const router = createBrowserRouter(
     <Route path='/movie/:id' element={<MoveDetails/>}/>
     <Route path='/user-profile' element={<AuthProvider><UserProfile/></AuthProvider>}/>
     <Route path='/moive/available-shows/:id' element={<AuthProvider><AvailabeTheatres/></AuthProvider>}/>
+    <Route path='/moive/select-seat/' element={<AuthProvider><SelectSeat/></AuthProvider>}/>
 
     <Route path='/admin' element={<AdminLogin/>}/>
     <Route path='/admin/user-list' element={<UserPage/>}/>

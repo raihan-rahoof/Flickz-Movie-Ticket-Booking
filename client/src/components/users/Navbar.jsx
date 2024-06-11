@@ -98,7 +98,7 @@ function Navbar() {
     <p className="font-semibold">{user.email}</p>
   </DropdownItem>
   <DropdownItem key="settings">
-   Profile
+   <Link to={'/user-profile'}>Profile</Link>
   </DropdownItem>
   
   <DropdownItem key="analytics">

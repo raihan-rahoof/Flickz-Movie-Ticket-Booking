@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import createAxiosInstance from '../../../utlis/axiosinstance';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 import formatTime12Hour from '../../../utlis/formatTime12';
 import formatDateString from '../../../utlis/Dateformat';
+import { Button , Input} from '@nextui-org/react';
 
 function TheatreShowsList({ movie_id }) {
   const [shows, setShows] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredTheatres, setFilteredTheatres] = useState([]);
   const [selectedDate, setSelectedDate] = useState('');
+  const navigate = useNavigate();
 
   const axiosInstance = createAxiosInstance('theatre');
 
@@ -54,6 +57,10 @@ function TheatreShowsList({ movie_id }) {
     }
   };
 
+  const handleShowClick = (show) => {
+    navigate('/moive/select-seat/', { state: show });
+  };
+
   const groupShowsByTheatreAndDate = (shows) => {
     const groupedShows = {};
 
@@ -72,7 +79,6 @@ function TheatreShowsList({ movie_id }) {
       groupedShows[theatreName][date].push(show);
     });
 
-    console.log("Grouped Shows:", groupedShows); // Debugging log
     return groupedShows;
   };
 
@@ -80,41 +86,45 @@ function TheatreShowsList({ movie_id }) {
 
   return (
     <>
-      <div className="flex flex-col justify-center container h-screen mx-auto p-4">
+      <div className="flex flex-col justify-center container h-screen   mx-auto p-4">
         <div className="flex justify-center items-center text-center mb-6">
           <div>
             <h3 className="text-3xl font-semibold mb-2">Search Theatre</h3>
-            <input
+            <Input
               type="text"
               placeholder="Search Theatres"
               value={searchQuery}
               onChange={handleSearchChange}
-              className="rounded-full px-4 py-2 bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring focus:border-blue-300"
+              startContent={
+                <i class="fa-solid fa-magnifying-glass"></i>
+              }
             />
           </div>
         </div>
 
         <div className="mb-6">
-          <div className="flex space-x-2 justify-start bg-slate-400 rounded-md pt-2 pb-2 pl-8">
-            <button
+          <div className="flex space-x-2 justify-start bg-[#101824] rounded-md pt-3 pb-3 pl-8">
+            <Button
+              radius='sm'
               onClick={() => handleDateClick('')}
-              className='bg-gray-700 text-white px-4 py-2 rounded'
+              className='bg-gray-700 text-white '
             >
               All
-            </button>
+            </Button>
             {[...new Set(shows.map(show => show.date))].map(date => (
-              <button
+              <Button
+                radius='sm'
                 key={date}
                 onClick={() => handleDateClick(date)}
-                className={`bg-gray-700 text-white px-4 py-2 rounded ${selectedDate === date ? 'bg-blue-700' : ''}`}
+                className={`bg-gray-700 text-white px-4 py-2  ${selectedDate === date ? 'bg-gradient-to-r from-[#2d75b3] to-blue-800' : ''}`}
               >
                 {formatDateString(date)}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
 
-        <div className="space-y-4 bg-green-300 p-8 rounded-lg">
+        <div className="space-y-4 bg-[#101824] p-8 rounded-lg">
           {Object.keys(groupedShows).map(theatreName => (
             Object.keys(groupedShows[theatreName]).map(date => (
               <div key={`${theatreName}-${date}`} className="bg-gray-800 rounded-lg p-4 mb-4">
@@ -125,7 +135,7 @@ function TheatreShowsList({ movie_id }) {
                 </div>
                 <div className="flex gap-2 flex-wrap mt-2">
                   {groupedShows[theatreName][date].map(show => (
-                    <button key={show.id} className="bg-gray-700 text-white px-4 py-2 rounded mb-2">
+                    <button key={show.id} className=" bg-gradient-to-r from-[#2d75b3] to-blue-800 text-white px-4 py-2 rounded mb-2" onClick={() => handleShowClick(show)}>
                       {formatTime12Hour(show.start_time)} - {formatTime12Hour(show.end_time)}
                     </button>
                   ))}
