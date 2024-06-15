@@ -32,7 +32,16 @@ class Seat(models.Model):
     section = models.ForeignKey(Section, related_name="seats", on_delete=models.CASCADE)
     row_number = models.IntegerField()
     column_number = models.IntegerField()
+    reserved_by = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
     is_reserved = models.BooleanField(default=False)
+    selected_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="selected_seats",
+    )
+    selected_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"Seat {self.row_number}-{self.column_number} in {self.section.name}"

@@ -11,7 +11,8 @@ urlpatterns = [
     path('api/v1/cadmin/',include('adminside.urls')),
     path('api/v1/theatre/',include('theatre_side.urls')),
     path('api/v1/home/',include('users.urls')),
-    path('api/v1/screen/',include('theatre_screen.urls'))
+    path('api/v1/screen/',include('theatre_screen.urls')),
+    path('api/v1/booking/',include('bookings.urls'))
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -69,6 +69,7 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(max_length=128, write_only=True)
     access_token = serializers.CharField(max_length=255, read_only=True)
     refresh_token = serializers.CharField(max_length=255, read_only=True)
+    user_id = serializers.IntegerField(read_only=True)
 
     def validate(self, attrs):
         email = attrs.get("email")
@@ -84,7 +85,7 @@ class LoginSerializer(serializers.Serializer):
         elif not user.is_active:
             raise AuthenticationFailed("Your Account has been Blocked due some Reason")
         user = authenticate(request, email=email, password=password, user_type="normal")
-        
+
         if not user:
             raise AuthenticationFailed("invalid credentials try again")
         if not user.is_verified:
@@ -94,9 +95,9 @@ class LoginSerializer(serializers.Serializer):
         # Return the validated data with access and refresh tokens
         return {
             "email": user.email,
-            "full_name": user.get_full_name,
             "access_token": str(tokens.get("access")),
             "refresh_token": str(tokens.get("refresh")),
+            "user_id": user.id,
         }
 
 
