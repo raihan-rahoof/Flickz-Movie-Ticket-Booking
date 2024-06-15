@@ -3,8 +3,7 @@ import environ
 import os
 from pathlib import Path
 from datetime import timedelta 
-
-
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,25 +29,36 @@ AUTH_USER_MODEL='user_auth.User'
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'rest_framework',
-    'corsheaders',
-    'rest_framework_simplejwt.token_blacklist',
-
-    'user_auth',
-    'social_accounts',
-    'adminside',
-    'theatre_side',
-    'users',
-    'theatre_screen',
-
-    
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "rest_framework",
+    "corsheaders",
+    "rest_framework_simplejwt.token_blacklist",
+    "user_auth",
+    "social_accounts",
+    "adminside",
+    "theatre_side",
+    "users",
+    "channels",
+    "theatre_screen",
+    "bookings",
 ]
+
+ASGI_APPLICATION = 'backend.asgi.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -111,8 +121,6 @@ DATABASES = {
 }
 
 
-
-
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
@@ -151,9 +159,6 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
     
 }
-
-
-
 
 
 # Internationalization
@@ -196,3 +201,14 @@ AUTHENTICATION_BACKENDS = (
 GOOGLE_CLIENT_ID=env('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET=env('GOOGLE_CLIENT_SECRET')
 SOCIAL_PASSWORD =env('SOCIAL_PASSWORD')
+
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = "UTC"
+
+STRIPE_SECRET_KEY = "sk_test_51PRBUXJab1Eh3UNDVh3LaiWNMISH1wB4yYNgHF58tl5A7oLS6I1RgZcCBuxOcEddu6e9ZGkmwHUEpWj0KloGaKeG00TMCeRY97"
+STRIPE_PUBLISHABLE_KEY = "pk_test_51PRBUXJab1Eh3UND6ig2wzb9wnUBCwK3vnJRubJ9pbSIyK07Rd0ClznqGRmtFYPOeqzbHJMUGqoX1zbQp50loNi9006P3uVDQk"
+FRONTEND_URL = 'http://localhost:5173'

@@ -6,7 +6,14 @@ from .models import  Screen, Seat, Section
 class SeatSerializer(serializers.ModelSerializer):
     class Meta:
         model = Seat
-        fields = ["id", "row_number", "column_number", "is_reserved"]
+        fields = [
+            "id",
+            "row_number",
+            "column_number",
+            "is_reserved",
+            "selected_by",
+            "selected_at",
+        ]
 
 
 class SectionSerializer(serializers.ModelSerializer):
@@ -98,5 +105,3 @@ class ScreenLayoutSerializer(serializers.ModelSerializer):
     class Meta:
         model = Screen
         fields = ['layout']
-
-    

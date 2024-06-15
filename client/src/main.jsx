@@ -30,6 +30,10 @@ import TheatreScreens from './pages/theatre/theatreManagment/TheatreScreens';
 import TheatreSeatLayoutEdit from './components/Theatre/TheatreSeatLayoutEdit';
 import AvailabeTheatres from './pages/users/AvailabeTheatres';
 import SelectSeat from './pages/users/SelectSeat';
+import PaymentFailed from './components/users/movie-details/PaymentFailed';
+import PaymentSuccess from './components/users/movie-details/PaymentSuccess';
+import TicketDetails from './pages/users/Profile/TicketDetails';
+import TicketDetailView from './pages/users/Profile/TicketDetailView';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -44,8 +48,12 @@ const router = createBrowserRouter(
     <Route path='/reset-password-confirm/:uid/:token' element={<ChangePassword/>}/>
     <Route path='/movie/:id' element={<MoveDetails/>}/>
     <Route path='/user-profile' element={<AuthProvider><UserProfile/></AuthProvider>}/>
+    <Route path='/tickets' element={<AuthProvider><TicketDetails/></AuthProvider>}/>
+    <Route path='/tickets/details/:id' element={<AuthProvider><TicketDetailView/></AuthProvider>}/>
     <Route path='/moive/available-shows/:id' element={<AuthProvider><AvailabeTheatres/></AuthProvider>}/>
     <Route path='/moive/select-seat/' element={<AuthProvider><SelectSeat/></AuthProvider>}/>
+    <Route path="/payment-success" element={<PaymentSuccess/>} />
+    <Route path="/payment-failed" element={<PaymentFailed/>} />
 
     <Route path='/admin' element={<AdminLogin/>}/>
     <Route path='/admin/user-list' element={<UserPage/>}/>

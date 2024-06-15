@@ -257,7 +257,7 @@ function TheatreShowCards() {
                 <Select
                   options={screens}
                   onChange={handleScreenSelect}
-                  placeholder="Select a movie"
+                  placeholder="Select a Screen"
                   isSearchable
                    styles={customStyles}
                 />

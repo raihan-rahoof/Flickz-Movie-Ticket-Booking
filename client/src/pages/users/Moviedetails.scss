@@ -13,32 +13,11 @@
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0), #0F0F14); /* Adjust the opacity of the fade as needed */
   }
 
-  .detail-poster{
-    display: flex;
-    padding:20px;
-    overflow-y: hidden;
-    scroll-behavior: smooth;
-    height: 360px;
-    width: max-content;
-    img{
-      border-radius: 0.5rem;
-    }
-  }
 
-  .description{
-    width: 43rem;
 
-    @media (max-width: 950px) {
-        width: 27rem;
-      }
-  }
+  
 
-  .info{
-    display: flex;
-    justify-content: start;
-    flex-direction: column;
-    padding-top: 2rem;
-  }
+
 
   
   

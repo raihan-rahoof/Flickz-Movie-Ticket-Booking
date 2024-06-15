@@ -32,6 +32,7 @@ function LoginForm() {
       const user = {
         'email': server_res.data.email,
         "name": server_res.data.name,
+        'user_id':server_res.data.user_id
       }
 
       if (server_res.status === 200) {
@@ -99,9 +100,10 @@ function LoginForm() {
         const response = res.data;
         
         const user = {
-          'email': response.email,
-          "name": response.name,
-        }
+        'email': response.email,
+        "name": response.name,
+        'user_id':response.user_id
+      }
   
         if (res.status === 200) {
           setLoading(false);
@@ -138,42 +140,42 @@ function LoginForm() {
 
   return (
     <>
-   <div class=" flex justify-center items-center">
-    <div class="grid gap-8">
+   <div className=" flex justify-center items-center">
+    <div className="grid gap-8">
       <div
         id="back-div"
-        class="bg-gradient-to-r from-[#427EF5] to-[#274A8F] rounded-[26px] m-4"
+        className="bg-gradient-to-r from-[#427EF5] to-[#274A8F] rounded-[26px] m-4"
       >
         <div
-          class="border-[20px] border-transparent rounded-[20px] dark:bg-gray-900 bg-white shadow-lg xl:p-5 2xl:p-5 lg:p-5 md:p-5 sm:p-1 m-1"
+          className="border-[20px] border-transparent rounded-[20px] dark:bg-gray-900 bg-white shadow-lg xl:p-5 2xl:p-5 lg:p-5 md:p-5 sm:p-1 m-1"
         >
-          <h1 class="pt-8 pb-6 font-semibold dark:text-gray-400 text-4xl text-center cursor-default">
+          <h1 className="pt-8 pb-6 font-semibold dark:text-gray-400 text-4xl text-center cursor-default">
             Log in
           </h1>
-          <form onSubmit={handleSubmit} method="post" class="space-y-4">
+          <form onSubmit={handleSubmit} method="post" className="space-y-4">
             <div>
-              <label for="email" class="mb-2  dark:text-gray-400 text-lg">Email</label>
+              <label for="email" className="mb-2  dark:text-gray-400 text-lg">Email</label>
               <input
                 id="email"
                 name='email'
                 value={loginData.email}
                 onChange={HandleOnChange}
                 autoComplete="off" 
-                class="border p-3 bg-[#7b6e6e33] dark:text-gray-300  dark:border-gray-700 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
+                className="border p-3 bg-[#7b6e6e33] dark:text-gray-300  dark:border-gray-700 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
                 type="email"
                 required
                 
               />
             </div>
             <div>
-              <label for="password" class="mb-2 dark:text-gray-400 text-lg">Password</label>
+              <label for="password" className="mb-2 dark:text-gray-400 text-lg">Password</label>
               <input
                 id="password"
                 name='password'
                 value = {loginData.password}
                 onChange={HandleOnChange}
                 autoComplete="off" 
-                class="border p-3 shadow-md bg-[#7b6e6e33] dark:text-gray-300  dark:border-gray-700 placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
+                className="border p-3 shadow-md bg-[#7b6e6e33] dark:text-gray-300  dark:border-gray-700 placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
                 type="password"
                 
                 required
@@ -181,27 +183,27 @@ function LoginForm() {
               />
             </div>
             <a
-              class="group text-blue-400 transition-all duration-100 ease-in-out"
+              className="group text-blue-400 transition-all duration-100 ease-in-out"
               href="#"
             >
               <Link to='/reset-password'
-                class="bg-left-bottom bg-gradient-to-r text-sm from-blue-400 to-blue-400 bg-[length:0%_2px] bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500 ease-out"
+                className="bg-left-bottom bg-gradient-to-r text-sm from-blue-400 to-blue-400 bg-[length:0%_2px] bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500 ease-out"
               >
                 Forget your password?
               </Link>
             </a>
             <button
-              class="bg-gradient-to-r dark:text-gray-300 from-blue-500 to-[#274A8F] shadow-lg mt-6 p-2 text-white rounded-lg w-full hover:scale-105 hover:from-purple-500 hover:to-blue-500 transition duration-300 ease-in-out"
+              className="bg-gradient-to-r dark:text-gray-300 from-blue-500 to-[#274A8F] shadow-lg mt-6 p-2 text-white rounded-lg w-full hover:scale-105 hover:from-purple-500 hover:to-blue-500 transition duration-300 ease-in-out"
               type="submit"
             >
              { isLoading ?  <BeatLoader color="#ffffff" cssOverride={{position: 'relative', top: '5px' }}/>: "LOG IN"}
             </button>
           </form>
-          <div class="flex flex-col mt-4 items-center justify-center text-sm">
-            <h3 class="dark:text-gray-300">
+          <div className="flex flex-col mt-4 items-center justify-center text-sm">
+            <h3 className="dark:text-gray-300">
               Don't have an account?
               <a
-                class="group text-blue-400 transition-all duration-100 ease-in-out"
+                className="group text-blue-400 transition-all duration-100 ease-in-out"
                 href="#"
               >
              <Link to='/register'
@@ -213,7 +215,7 @@ function LoginForm() {
               </a>
             </h3>
           </div>
-          <div class="py-3 flex items-center text-sm text-gray-800 before:flex-1 before:border-t before:border-gray-200 before:me-6 after:flex-1 after:border-t after:border-gray-200 after:ms-6 dark:text-white dark:before:border-neutral-600 dark:after:border-neutral-600">Or </div>
+          <div className="py-3 flex items-center text-sm text-gray-800 before:flex-1 before:border-t before:border-gray-200 before:me-6 after:flex-1 after:border-t after:border-gray-200 after:ms-6 dark:text-white dark:before:border-neutral-600 dark:after:border-neutral-600">Or </div>
           <div className="googleContainer" >
               <div className="gsignIn" id='signInDiv'>
                 
@@ -221,27 +223,27 @@ function LoginForm() {
           </div>
 
           {/* <div
-            class="text-gray-500 flex text-center flex-col mt-4 items-center text-sm"
+            className="text-gray-500 flex text-center flex-col mt-4 items-center text-sm"
           >
-            <p class="cursor-default">
+            <p className="cursor-default">
               By signing in, you agree to our
               <a
-                class="group text-blue-400 transition-all duration-100 ease-in-out"
+                className="group text-blue-400 transition-all duration-100 ease-in-out"
                 href="#"
               >
                 <span
-                  class="cursor-pointer bg-left-bottom bg-gradient-to-r from-blue-400 to-blue-400 bg-[length:0%_2px] bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500 ease-out"
+                  className="cursor-pointer bg-left-bottom bg-gradient-to-r from-blue-400 to-blue-400 bg-[length:0%_2px] bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500 ease-out"
                 >
                   Terms
                 </span>
               </a>
               and
               <a
-                class="group text-blue-400 transition-all duration-100 ease-in-out"
+                className="group text-blue-400 transition-all duration-100 ease-in-out"
                 href="#"
               >
                 <span
-                  class="cursor-pointer bg-left-bottom bg-gradient-to-r from-blue-400 to-blue-400 bg-[length:0%_2px] bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500 ease-out"
+                  className="cursor-pointer bg-left-bottom bg-gradient-to-r from-blue-400 to-blue-400 bg-[length:0%_2px] bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500 ease-out"
                 >
                   Privacy Policy
                 </span>
