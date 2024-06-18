@@ -1,11 +1,14 @@
-from django.shortcuts import render
-from rest_framework import generics,status
-from rest_framework.response import Response
-from .models import Screen, Seat, Section
-from .serializers import ScreenSerializer,ScreenLayoutSerializer
-from rest_framework.parsers import MultiPartParser, FormParser
 import json
+
+from django.shortcuts import render
+from rest_framework import generics, status
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+from .models import Screen, Seat, Section
+from .serializers import ScreenLayoutSerializer, ScreenSerializer
+
 
 # Create your views here.
 class ScreenListCreateView(generics.ListCreateAPIView):
@@ -30,7 +33,7 @@ class ScreenListCreateView(generics.ListCreateAPIView):
             rows=rows,
             cols=cols,
             image=image,
-            theatre=theatre
+            theatre=theatre,
         )
 
         sections_data = json.loads(data.get("sections", "[]"))
@@ -108,12 +111,12 @@ class ScreenLayoutUpdateView(generics.UpdateAPIView):
         instance = self.get_object()
         data = request.data.copy()
 
-        layout = data.get('layout')
+        layout = data.get("layout")
 
-        if isinstance(layout,str):
+        if isinstance(layout, str):
             try:
                 layout = json.loads(layout)
-                data['layout']= layout
+                data["layout"] = layout
             except json.JSONDecodeError:
                 return Response(
                     {"layout": {"non_field_errors": ["Invalid layout data format."]}},
