@@ -17,8 +17,9 @@ function SeatLayout({ show }) {
   const [ws, setWs] = useState(null);
   const user = JSON.parse(localStorage.getItem('user'));
   const myId = user.user_id;
-  const axiosInstace = createAxiosInstance('user')
+  const axiosInstance = createAxiosInstance('user');
 
+  
   useEffect(() => {
     const websocket = new WebSocket('ws://127.0.0.1:8000/ws/seats/');
 
@@ -39,18 +40,18 @@ function SeatLayout({ show }) {
       const data = JSON.parse(event.data);
       const seatId = data.seat_id;
       const user_id = data.user_id;
+      const show_id = data.show_id;
 
-      console.log('WebSocket message received:', data);
+      if (show_id !== show.id) return; // Ignore messages for other shows
 
       if (data.type === 'seat_selected') {
-        if (user_id == myId) {
+        if (user_id === myId) {
           setMySelectedSeats((prevSeats) => [...prevSeats, seatId]);
         } else {
           setSelectedSeats((prevSeats) => [...prevSeats, seatId]);
         }
       } else if (data.type === 'seat_unselected') {
-        console.log(`Unselecting seat: ${seatId}`);
-        if (user_id == myId) {
+        if (user_id === myId) {
           setMySelectedSeats((prevSeats) => prevSeats.filter(id => id !== seatId));
         }
         setSelectedSeats((prevSeats) => prevSeats.filter(id => id !== seatId));
@@ -60,25 +61,29 @@ function SeatLayout({ show }) {
     return () => {
       websocket.close();
     };
-  }, [myId]);
+  }, [show.id, myId]);
 
   useEffect(() => {
-    const reserved = [];
-    show.screen.sections.forEach(section => {
-      section.seats.forEach(seat => {
-        if (seat.is_reserved) {
-          reserved.push(seat.id);
-        }
-      });
-    });
-    setReservedSeats(reserved);
-  }, [show]);
+    const fetchReservedSeats = async () => {
+      try {
+        const response = await axiosInstance.get(`screen/shows/${show.id}/reservations/`);
+        const reserved = response.data.map(reservation => reservation.seat);
+        setReservedSeats(reserved);
+      } catch (error) {
+        console.error('Error fetching reserved seats:', error);
+      }
+    };
+
+    fetchReservedSeats();
+  }, []);
+
+  console.log(reservedSeats);
 
   const handleSeatClick = (seatId) => {
     if (ws && !selectedSeats.includes(seatId) && !reservedSeats.includes(seatId)) {
-      const user_mail = JSON.parse(localStorage.getItem('user')).email;
+      const userMail = JSON.parse(localStorage.getItem('user')).email;
       const action = mySelectedSeats.includes(seatId) ? 'unselect' : 'select';
-      ws.send(JSON.stringify({ seat_id: seatId, user_mail: user_mail, action: action }));
+      ws.send(JSON.stringify({ seat_id: seatId, user_mail: userMail, action: action, show_id: show.id }));
     }
   };
 
@@ -104,7 +109,7 @@ function SeatLayout({ show }) {
     const stripe = await stripePromise;
 
     try {
-      const response = await axiosInstace.post('/booking/checkout/', {
+      const response = await axiosInstance.post('/booking/checkout/', {
         show_id: show.id,
         seats: mySelectedSeats
       });

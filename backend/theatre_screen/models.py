@@ -1,5 +1,9 @@
 from django.db import models
-from user_auth.models import User
+from django.contrib.auth import get_user_model
+from django.apps import apps
+
+
+User = get_user_model()
 
 # Create your models here.
 class Screen(models.Model):
@@ -32,16 +36,28 @@ class Seat(models.Model):
     section = models.ForeignKey(Section, related_name="seats", on_delete=models.CASCADE)
     row_number = models.IntegerField()
     column_number = models.IntegerField()
-    reserved_by = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
+
+    def __str__(self):
+        return f"Seat {self.row_number}-{self.column_number} in {self.section.name}"
+
+
+class ShowSeatReservation(models.Model):
+    show = models.ForeignKey("theatre_side.shows", on_delete=models.CASCADE)
+    seat = models.ForeignKey(Seat, on_delete=models.CASCADE)
+    reserved_by = models.ForeignKey(
+        User, on_delete=models.CASCADE, null=True, blank=True
+    )
     is_reserved = models.BooleanField(default=False)
     selected_by = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="selected_seats",
+        related_name="show_selected_seats",
     )
     selected_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return f"Seat {self.row_number}-{self.column_number} in {self.section.name}"
+        return (
+            f"Seat {self.seat.row_number}-{self.seat.column_number} in Show {self.show}"
+        )

@@ -7,6 +7,7 @@ class Bookings(models.Model):
     show = models.ForeignKey(Shows,on_delete=models.CASCADE)
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     seats = models.JSONField(default=list)
+    seat_number = models.CharField(max_length=50,null=True,blank=True)
     total_price = models.DecimalField(max_digits=10,decimal_places=2)
     stripe_payment_id = models.CharField(max_length=255)
     payment_status = models.CharField(max_length=50)

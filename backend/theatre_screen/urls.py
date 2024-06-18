@@ -1,5 +1,10 @@
 from django.urls import path
-from .views import ScreenListCreateView,ScreenRetrieveUpdateView,ScreenLayoutUpdateView
+from .views import (
+    ScreenListCreateView,
+    ScreenRetrieveUpdateView,
+    ScreenLayoutUpdateView,
+    ShowSeatReservationList,
+)
 
 urlpatterns = [
     path("add-screen/", ScreenListCreateView.as_view(), name="add-screen"),
@@ -12,5 +17,10 @@ urlpatterns = [
         "update-layout/<int:pk>/",
         ScreenLayoutUpdateView.as_view(),
         name="update-layout",
+    ),
+    path(
+        "shows/<int:show_id>/reservations/",
+        ShowSeatReservationList.as_view(),
+        name="show_seat_reservation_list",
     ),
 ]

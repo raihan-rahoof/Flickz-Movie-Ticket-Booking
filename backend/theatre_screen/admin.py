@@ -4,3 +4,4 @@ from .models import *
 admin.site.register(Screen)
 admin.site.register(Section)
 admin.site.register(Seat)
+admin.site.register(ShowSeatReservation)

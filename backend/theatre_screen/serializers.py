@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import  Screen, Seat, Section
+from .models import  Screen, Seat, Section , ShowSeatReservation
 
 
 class SeatSerializer(serializers.ModelSerializer):
@@ -10,9 +10,7 @@ class SeatSerializer(serializers.ModelSerializer):
             "id",
             "row_number",
             "column_number",
-            "is_reserved",
-            "selected_by",
-            "selected_at",
+           
         ]
 
 
@@ -105,3 +103,16 @@ class ScreenLayoutSerializer(serializers.ModelSerializer):
     class Meta:
         model = Screen
         fields = ['layout']
+
+
+class ShowSeatReservationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ShowSeatReservation
+        fields = [
+            "show",
+            "seat",
+            "reserved_by",
+            "is_reserved",
+            "selected_by",
+            "selected_at",
+        ]

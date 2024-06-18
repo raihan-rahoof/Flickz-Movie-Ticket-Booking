@@ -5,9 +5,9 @@ from rest_framework import generics, status
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
-from .models import Screen, Seat, Section
-from .serializers import ScreenLayoutSerializer, ScreenSerializer
+from rest_framework.views import APIView
+from .models import Screen, Seat, Section , ShowSeatReservation
+from .serializers import ScreenLayoutSerializer, ScreenSerializer , ShowSeatReservationSerializer
 
 
 # Create your views here.
@@ -131,3 +131,17 @@ class ScreenLayoutUpdateView(generics.UpdateAPIView):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
+
+
+class ShowSeatReservationList(APIView):
+    def get(self, request, show_id):
+        reservations = ShowSeatReservation.objects.filter(show_id=show_id)
+        serializer = ShowSeatReservationSerializer(reservations, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, show_id):
+        serializer = ShowSeatReservationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

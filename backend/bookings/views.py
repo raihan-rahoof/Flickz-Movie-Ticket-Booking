@@ -4,8 +4,8 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from theatre_screen.models import Seat,Section
-from theatre_side.models import Shows
+from theatre_screen.models import Seat,Section , ShowSeatReservation
+from theatre_side.models import Shows 
 from .serializers import BookingSerializer
 from rest_framework import generics
 
@@ -87,9 +87,11 @@ class PaymentSuccessView(APIView):
         bookings.payment_status = "Paid"
         bookings.save()
 
+        
+
         for seat_id in bookings.seats:
             try:
-                seat = Seat.objects.get(id=seat_id)
+                seat = ShowSeatReservation.objects.get(seat=seat_id)
                 seat.is_reserved = True
                 seat.reserved_by = bookings.user
                 seat.save()
